@@ -1,0 +1,127 @@
+{% extends 'partials/base.html' %}
+{% block title %}Login Page{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+body { 
+    color: #ffffff; /* White text */
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(45deg, #9ca5e9, #2890c4); /* Gradient background */
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* Card styling */
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #3949ab; /* Medium Blue */
+    color: #ffffff; /* White text */
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Form styling */
+form {
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: #040614; /* Darker Blue */
+    border-color: #303f9f;
+}
+
+.btn-primary:hover {
+    background-color: #060c60; /* Dark Blue */
+    border-color: #010411;
+}
+
+.btn-success {
+    background-color: #66bb6a; /* Success button color */
+    border-color: #66bb6a;
+}
+
+.btn-success:hover {
+    background-color: #28942c; /* Darker success button color */
+    border-color: #268a29;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Additional elements styling */
+h4 {
+    color: #f7f9fb; /* Light Blue */
+}
+
+hr {
+    border-color: #0a3c64; /* Light Blue */
+}
+
+a {
+    color: #e3eaf0; /* Light Blue */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .col-md-5.offset-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .card {
+        margin-top: 20px;
+    }
+}
+
+</style>
+<div class="cover">
+    <div class="container">
+        <div class="row mt-5 pt-3">
+            <div class="col-md-5 offset-md-6">
+                <div class="card my-3 shadow">
+                    <div class="card-body">
+                        <h4>Login Page</h4>
+                        <hr>
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <input class="btn btn-primary btn-block" type="submit" value="Login">
+                        </form>
+                        <hr>
+                        <div class="text-center my-3">
+                            <a href="{% url 'password_reset' %}">Forget Password</a>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <a class="btn btn-success" href="{% url 'users-sign-up' %}">Create An Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
