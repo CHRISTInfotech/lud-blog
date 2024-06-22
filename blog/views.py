@@ -83,3 +83,6 @@ def home(request):
         'form': form
     }
     return render(request, 'blog/home.html', context)
+
+
+
