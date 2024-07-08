@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <form method="POST">
                         {% csrf_token %}
-                        {{ form|crispy }}
+                        {{ form }}
                         <input class="btn btn-primary btn-block" type="submit" value="Post">
                     </form>
                 </div>
