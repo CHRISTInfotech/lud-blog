@@ -1,0 +1,11 @@
+# media folder with the images
+media/
+
+# database file
+db.sqlite3
+
+# virtualenv and its files
+venv
+
+# pycache files
+*.pyc
