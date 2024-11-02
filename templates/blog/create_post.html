@@ -1,18 +1,17 @@
 {% extends 'partials/base.html' %}
-{% block title %}Post Edit page{% endblock %}
+{% block title %}Create Blog{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-
-<div class="container" style="padding-top: 60px;">
+<div class="container custom-container" style="padding-top: 50px;">
     <div class="row mt-5 pt-3">
         <div class="col-md-8 offset-md-2">
             <div class="card my-3 shadow">
                 <div class="card-body">
                     <form method="POST">
                         {% csrf_token %}
-                        {{ form.media }} 
-                        {{ form|crispy }}
-                        <input class="btn btn-primary btn-sm" type="submit" value="Save">
+                        {{ form.media }}
+                        {{ form.as_p }}
+                        <input class="btn btn-primary btn-block" type="submit" value="Post">
                     </form>
                 </div>
             </div>

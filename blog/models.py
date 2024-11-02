@@ -1,15 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
+from ckeditor.fields import RichTextField
+from django.urls import reverse
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
 
-# Create your models here.
+    def __str__(self):
+        return self.name
 
+    def get_absolute_url(self):
+        return reverse('blog-home')
 
-class PostModel(models.Model):
+class Post(models.Model):
     title = models.CharField(max_length=100)
-    content = models.TextField()
+    content = RichTextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
+    category = models.CharField(max_length=255, default='category')
+    is_archived = models.BooleanField(default=False)  # New field to indicate if a post is archived
+    is_approved = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('-date_created',)
@@ -23,21 +33,10 @@ class PostModel(models.Model):
     def __str__(self):
         return self.title
 
-
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
-    content = models.CharField(max_length=200)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    content = models.TextField(max_length=200)
 
     def __str__(self):
         return self.content
-    
-class Post(models.Model):
-    title = models.CharField(max_length=100)
-    content = models.TextField()
-    date_created = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
-
-    def __str__(self):
-        return self.title    
-    

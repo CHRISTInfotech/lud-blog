@@ -1,34 +1,45 @@
-<nav class="navbar navbar-expand-lg navbar-primary bg-primary fixed-top">
-    
-    <div class="container">
-        {% if request.user.is_authenticated %}
-        <a class="navbar-brand text-white" href="{% url 'blog-home' %}">Let Us Dream </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<link href="https://bootswatch.com/5/minty/bootstrap.min.css" rel="stylesheet">
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: lightblue;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'blog-home' %}">
+            <img src="/media/logo.svg.png" alt="logo" style="height: 70px;" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link text-white" href="{% url 'users-profile' %}">Profile <span
-                            class="sr-only">(current)</span></a>
+        {% if request.user.is_authenticated %}
+        <a class="navbar-brand text-blue" href="{% url 'blog-index' %}">
+            <h3 style="font-family: -apple-system, BlinkMacSystemFont;">Let us Dream Blogs</h3>
+        </a>
+        {% endif %}
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                <li class="nav-item" style="padding-right: 60px;">
+                    <a class="nav-link" href="{% url 'blog-index' %}">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'users-logout' %}">Logout</a>
+                <li class="nav-item" style="padding-right: 60px;">
+                    <a class="nav-link" href="{% url 'blog-create_post' %}">Create Blogs</a>
                 </li>
+                <li class="nav-item" style="padding-right: 60px;">
+                    <a class="nav-link" href="{% url 'archived-posts' %}">Archived Posts</a> <!-- Added Archived Posts link -->
+                </li>
+                <li class="nav-item" style="padding-right: 60px;">
+                    <a class="nav-link text-blue" href="{% url 'users-profile' %}">Profile</a>
+                </li>
+                <li class="nav-item" style="padding-right: 60px;">
+                    <a class="nav-link text-blue" href="{% url 'users-logout' %}">Logout</a>
+                </li>
+                {% else %}
+                {% if not request.user.is_authenticated %}
+                <a class="navbar-brand text-blue" href="{% url 'blog-home' %}" style="padding-right: 1500px;">
+                    <h3 style="font-family: -apple-system, BlinkMacSystemFont;">Let us Dream Blogs</h3>
+                </a>
+                {% endif %}
+                {% endif %}
             </ul>
-            {% else %}
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link text-white" href="{% url 'users-sign-up' %}">Sign Up <span
-                            class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'users-login' %}">Login</a>
-                </li>
-            </ul>
-            {% endif %}
         </div>
     </div>
 </nav>

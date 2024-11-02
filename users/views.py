@@ -4,7 +4,7 @@ from .forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 import os
 from django.contrib.auth import logout
-# Create your views here.
+
 
 
 def sign_up(request):

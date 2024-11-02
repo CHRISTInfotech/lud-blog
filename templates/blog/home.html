@@ -2,40 +2,106 @@
 {% block title %}Recent Posts Page{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-{% load static %}
-<div class="container">
-    <div class="row mt-5 pt-3">
-        <!-- Heading on the left -->
-        <div class="col-md-3 order-md-1">
-            <div class="card my-3 shadow">
-                <div class="card-body">
-                    <h3>RECENT BLOG POSTS</h3>  
+
+<link href="https://bootswatch.com/5/minty/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> <!-- Add Roboto font -->
+
+<body style="background: none;">
+<div class="container" style="padding-top: 150px;">
+    <!-- Category Buttons -->
+    <div class="text-center mb-4">
+        {% for category in categories %}
+        <a href="{% url 'category-posts' category.id %}" class="btn mx-2" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-5 pt-3 justify-content-center">
+        <!-- Expanded Blog Posts Box -->
+        <div class="col-md-8 col-lg-9">
+            <div class="card my-3 shadow blog-box">
+                <div class="card-body" style="padding-bottom: 25px; padding-top: 25px;text-align: center;">
+                    <h2 class="animated-heading">RECENT BLOG POSTS</h2>
                 </div>
             </div>
-        </div>
-        
-        <!-- Posts on the right -->
-        <div class="col-md-8 order-md-2 offset-md-1">
-            {% for post in posts %}
+        {% for post in page_obj %}
             <div class="card shadow my-3">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <img class="img-thumbnail" src="{{ post.author.profilemodel.image.url }}" alt="img">
+                            <img class="img-thumbnail" src="{{ post.author.profilemodel.image.url }}" alt="img" style="height:130px; width: 150px; margin-left: 80px;">
+                            <p class="text-center" style="margin-top: 10px;">{{ post.author.username }}</p>
                         </div>
                         <div class="col-md-8">
                             <small>{{ post.date_created }}</small>
                             <hr>
-                            <a class="h3" href="{% url 'users-sign-up' %}">{{ post.title }}</a>
+                            <a class="h3" href="{% url 'blog-about-post' post.pk %}" style="text-decoration: none;">{{ post.title }}</a>
                             <p class="text-justify my-3">
-                                {{ post.content }}
+                                {{ post.content|truncatewords:30|safe }}
+                                {% if post.content|length > 30 %}
+                                <a href="{% url 'blog-about-post' post.pk %}">Read More</a>
+                                {% endif %}
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
+
+<footer class="footer mt-5 bg-dark text-white" style="font-family: 'Merriweather', serif; padding: 25px 0; font-size: 20px;">
+    <div class="container-xl">
+        <div class="row d-flex align-items-center gy-4">
+            <!-- Copyright text -->
+            <div class="col-md-6 text-left">
+                <span class="copyright">© Let Us Dream.
+                    <br> Designed, Developed and Maintained by CHRIST Infotech.</span>
+            </div>
+
+            <div class="col-md-6 text-end">
+                <a href="{% url 'users-login' %}" class="btn btn-primary">Signup/Login</a>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
 {% endblock %}

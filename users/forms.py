@@ -34,9 +34,11 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
         class Meta:
             model = ProfileModel
-            fields = ['image']       
+            fields = ['image', 'linkedin_id', 'organization', 'designation']       
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content'] 
+        fields = ['title', 'content']
+
+

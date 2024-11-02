@@ -1,17 +1,37 @@
 from django import forms 
-from .models import PostModel, Comment
+from .models import Post, Comment, Category
+from ckeditor.widgets import CKEditorWidget
 
-class PostModelForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}))
+choices = Category.objects.all().values_list('name','name')
+
+choice_list = []
+
+for item in choices:
+    choice_list.append(item)
+
+
+class PostForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget(attrs={'rows': 5}))
+    
     class Meta:
-        model = PostModel
-        fields = ('title', 'content')
+        model = Post
+        fields = ('title','category','content')
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'category': forms.Select(choices=choice_list,attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 class PostUpdateForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget())
     class Meta:
-        model = PostModel
-        fields = ('title', 'content') 
-
+        model = Post
+        fields = ('title','category','content') 
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(choices=choice_list,attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 class CommentForm(forms.ModelForm):
     content = forms.CharField(
@@ -19,8 +39,5 @@ class CommentForm(forms.ModelForm):
 
     class Meta:
         model = Comment
-        fields = ('content',)      
-
-
-
+        fields = ('content',)
 

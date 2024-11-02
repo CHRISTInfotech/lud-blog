@@ -2,26 +2,46 @@
 {% block title %}Profile Page{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container">
-    <div class="row mt-5">
-        <div class="col-md-6 offset-md-3">
-            <div class="card my-3 shadow">
-                <div class="card-body">
-                    <span class="h4">Profile Page</span>
-                    <span>    <button type="button" class="btn btn-info float-right btn-sm" data-toggle="modal" data-target="#exampleModal">
-                      Edit Profile
-                  </button>
-                </span>
-                    <!-- Button trigger modal -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <img class="img-thumbnail" src="{{ user.profilemodel.image.url }}" alt="profile-img">
+<div class="container" style="padding-top: 60px;background-color: white;">
+    <div class="row mt-5">
+        <div class="col-md-8 offset-md-2">
+            <div class="card my-4 shadow-lg" style="border-radius: 20px; background: white; padding: 30px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h3" style="font-family: -apple-system, BlinkMacSystemFont;">Your Profile</span>
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal" style="font-family: -apple-system, BlinkMacSystemFont;">
+                            Edit Profile
+                        </button>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-4 text-center">
+                            <img class="img-thumbnail square shadow-sm" src="{{ user.profilemodel.image.url }}" alt="profile-img">
                         </div>
                         <div class="col-md-8">
-                            <h4>NAME: {{ user.username }}</h4>
-                            <h4>EMAIL: {{ user.email }}</h4>
+                            <div class="mb-3">
+                                <h2 style="font-family: -apple-system, BlinkMacSystemFont;">Name:</h2>
+                                <p style="font-family: -apple-system, BlinkMacSystemFont; font-size: 20px;">{{ user.username }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h2 style="font-family: -apple-system, BlinkMacSystemFont;">Email:</h2>
+                                <p style="font-family: -apple-system, BlinkMacSystemFont; font-size: 20px; ;">{{ user.email }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h2 style="font-family: -apple-system, BlinkMacSystemFont;">LinkedIn:</h2>
+                                <p style="font-family: -apple-system, BlinkMacSystemFont; font-size: 20px;"><a href="https://www.linkedin.com/in/{{ user.profilemodel.linkedin_id }}" style="color: #007bff;">{{ user.profilemodel.linkedin_id }}</a></p>
+                            </div>
+                            <div class="mb-3">
+                                <h2 style="font-family: -apple-system, BlinkMacSystemFont;">Organization:</h2>
+                                <p style="font-family: -apple-system, BlinkMacSystemFont; font-size: 20px;">{{ user.profilemodel.organization }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h2 style="font-family: -apple-system, BlinkMacSystemFont;">Designation:</h2>
+                                <p style="font-family: -apple-system, BlinkMacSystemFont; font-size: 20px;">{{ user.profilemodel.designation }}</p>
+                            </div>
                         </div>
                     </div>
                 </div> 
@@ -30,42 +50,35 @@
     </div>
 </div>
 
-
-
-
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Edit Profile Information</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4">
-              <img class="img-thumbnail" src="{{ user.profilemodel.image.url }}" alt="">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-header" style="background-color: #99c4f3; color: white; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                <h5 class="modal-title" id="exampleModalLabel" style="font-family: -apple-system, BlinkMacSystemFont;">Edit Profile Information</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="col-md-8">
-              <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ u_form|crispy }}
-                {{ p_form|crispy }}
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
-                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <img class="img-thumbnail rounded-circle shadow-sm" src="{{ user.profilemodel.image.url }}" alt="profile-img" style="width: 150px; height: 150px; border: 5px solid #007bff;">
+                    </div>
+                    <div class="col-md-8">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ u_form|crispy }}
+                            {{ p_form|crispy }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" style="font-family: -apple-system,BlinkMacSystemFont;">Cancel</button>
+                                <button type="submit" class="btn btn-primary btn-sm" style="font-family: -apple-system, BlinkMacSystemFont;">Save</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-              </form>
             </div>
-          </div>
-          ...
         </div>
-        
-      </div>
     </div>
-  </div>
+</div>
 {% endblock %}

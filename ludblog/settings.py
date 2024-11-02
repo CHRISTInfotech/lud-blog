@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
-    "crispy_bootstrap4",
+    'crispy_bootstrap4',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -134,7 +136,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = (BASE_DIR /'media')
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+   (BASE_DIR / 'static')
 ]
 
 STATIC_ROOT = (BASE_DIR /'asset')
@@ -150,3 +152,13 @@ EMAIL_USE_TLS = True
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
+
