@@ -1,4 +1,4 @@
-{% extends 'partials/body.html' %}
+{% extends 'partials/base.html' %}
 {% block title %}Recent Posts Page{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
@@ -8,47 +8,41 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> <!-- Add Roboto font -->
 
 <body style="background: none;">
-<div class="container" style="padding-top: 150px;">
-    <!-- Category Buttons -->
-    <div class="text-center mb-4">
-        {% for category in categories %}
-        <a href="{% url 'category-posts' category.id %}" class="btn mx-2" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
-            {{ category.name }}
-        </a>
-        {% endfor %}
-    </div>
-
-    <div class="row mt-5 pt-3 justify-content-center">
-        <!-- Expanded Blog Posts Box -->
-        <div class="col-md-8 col-lg-9">
+    {{ page_obj }}
+<div class="container" style="padding-top: 70px;">
+    <div class="row">
+        <!-- Blog Content -->
+        <div class="col-lg-10">
             <div class="card my-3 shadow blog-box">
-                <div class="card-body" style="padding-bottom: 25px; padding-top: 25px;text-align: center;">
+                <div class="card-body text-center" style="padding-bottom: 25px; padding-top: 25px;">
                     <h2 class="animated-heading">RECENT BLOG POSTS</h2>
                 </div>
             </div>
-        {% for post in page_obj %}
-            <div class="card shadow my-3">
+            {% for post in page_obj %}
+            <div class="card my-3" style="background-color: rgba(255, 255, 255, 0.8); border: none; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px);">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
-                            <img class="img-thumbnail" src="{{ post.author.profilemodel.image.url }}" alt="img" style="height:130px; width: 150px; margin-left: 80px;">
-                            <p class="text-center" style="margin-top: 10px;">{{ post.author.username }}</p>
+                        <div class="col-md-3 text-center">
+                            <img class="img-thumbnail" src="{{ post.author.profilemodel.image.url }}" alt="img" style="height:130px; width: 150px;">
+                            <p class="text-center mt-2">{{ post.author.username }}</p>
                         </div>
-                        <div class="col-md-8">
-                            <small>{{ post.date_created }}</small>
+                        <div class="col-md-9">
+                            <small class="d-block mb-1">{{ post.date_created }}</small>
+                            <small class="d-block mb-1"><strong>{{ post.category.name }}</strong></small>
                             <hr>
-                            <a class="h3" href="{% url 'blog-about-post' post.pk %}" style="text-decoration: none;">{{ post.title }}</a>
+                            <a class="h3" href="{% url 'blog-about-post' post.pk %}" style="text-decoration: none; color: #007bff;">{{ post.title }}</a>
                             <p class="text-justify my-3">
                                 {{ post.content|truncatewords:30|safe }}
                                 {% if post.content|length > 30 %}
-                                <a href="{% url 'blog-about-post' post.pk %}">Read More</a>
+                                <a href="{% url 'blog-about-post' post.pk %}" style="color: #007bff;">Read More</a>
                                 {% endif %}
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-        {% endfor %}
+            
+            {% endfor %}
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
@@ -85,23 +79,27 @@
                 </ul>
             </nav>
         </div>
+
+        <!-- Categories Sidebar -->
+        <div class="col-lg-2" style="position: sticky; top: 120px; height: fit-content;left: 10%;">
+            <div class="card shadow my-3">
+                <div class="card-header text-center" style="background-color: #007bff; color: white;">
+                    Categories
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for category in categories %}
+                    <li class="list-group-item">
+                        <a href="{% url 'category-posts' category_id=category.id %}" style="text-decoration: none; color: #007bff;">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
     </div>
 </div>
 
-<footer class="footer mt-5 bg-dark text-white" style="font-family: 'Merriweather', serif; padding: 25px 0; font-size: 20px;">
-    <div class="container-xl">
-        <div class="row d-flex align-items-center gy-4">
-            <!-- Copyright text -->
-            <div class="col-md-6 text-left">
-                <span class="copyright">© Let Us Dream.
-                    <br> Designed, Developed and Maintained by CHRIST Infotech.</span>
-            </div>
-
-            <div class="col-md-6 text-end">
-                <a href="{% url 'users-login' %}" class="btn btn-primary">Signup/Login</a>
-            </div>
-        </div>
-    </div>
-</footer>
 </body>
 {% endblock %}

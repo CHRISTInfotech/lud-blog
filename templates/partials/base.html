@@ -26,7 +26,21 @@
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-
+    <footer class="footer mt-5 bg-dark text-white" style="font-family: 'Merriweather', serif; padding: 25px 0; font-size: 20px;">
+      <div class="container-xl">
+          <div class="row d-flex align-items-center gy-4">
+              <!-- Copyright text -->
+              <div class="col-md-6 text-left">
+                  <span class="copyright">© Let Us Dream.
+                      <br> Designed, Developed and Maintained by CHRIST Infotech.</span>
+              </div>
+  
+              <div class="col-md-6 text-end">
+                  <a href="{% url 'send_request' %}" class="btn btn-primary">REQUEST FOR ACCOUNT</a>
+              </div>
+          </div>
+      </div>
+  </footer>
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

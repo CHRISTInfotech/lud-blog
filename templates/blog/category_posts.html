@@ -4,27 +4,38 @@
 
 <div class="container" style="padding-top: 160px;">
     <div class="row">
-        <div class="col-md-10 offset-md-1"> <!-- Expanded to fit more of the page -->
+        <!-- Blog Content -->
+        <div class="col-lg-10"> <!-- Main content on the left -->
             <!-- Styled Page Heading -->
             <h2 class="mb-4 text-center" style="font-family: 'Merriweather', serif; font-weight: 700; color: #2c3e50;">
                 Posts in {{ category.name }}
             </h2>
 
-            {% if posts %}
-                <div class="card-deck"> <!-- Changed to card-deck for wider layout -->
+            {% if page_obj %}
+                <div class="row"> <!-- Grid layout for cards -->
                     {% for post in page_obj %}
-                        <div class="card shadow-sm mb-4" style="min-width: 18rem;"> <!-- Set minimum width for larger boxes -->
-                            <div class="card-body">
-                                <h3 class="card-title">
-                                    <a href="{% url 'blog-post-detail' post.id %}" style="text-decoration: none; color: #3498db;">{{ post.title }}</a>
-                                </h3>
-                                <p class="card-text">
-                                    <small class="text-muted">By {{ post.author.username }} on {{ post.date_created }}</small>
-                                </p>
-                                <hr>
-                                <p class="card-text">{{ post.content|truncatewords:30|safe }}</p>
+                    <div class="card shadow my-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center">
+                                    <img class="img-thumbnail" src="{{ post.author.profilemodel.image.url }}" alt="img" style="height:130px; width: 150px;">
+                                    <p class="text-center mt-2">{{ post.author.username }}</p>
+                                </div>
+                                <div class="col-md-8">
+                                    <small>{{ post.date_created }}</small>
+                                    <small>{{ post.category.name }}</small>
+                                    <hr>
+                                    <a class="h3" href="{% url 'blog-about-post' post.pk %}" style="text-decoration: none;">{{ post.title }}</a>
+                                    <p class="text-justify my-3">
+                                        {{ post.content|truncatewords:30|safe }}
+                                        {% if post.content|length > 30 %}
+                                        <a href="{% url 'blog-about-post' post.pk %}">Read More</a>
+                                        {% endif %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    </div>
                     {% endfor %}
                 </div>
 
@@ -62,6 +73,24 @@
             {% else %}
                 <p class="text-center">No posts available in this category.</p>
             {% endif %}
+        </div>
+
+        <!-- Categories Sidebar -->
+        <div class="col-lg-2" style="position: sticky; top: 120px; height: fit-content;left: 10%;">
+            <div class="card shadow my-3">
+                <div class="card-header text-center" style="background-color: #007bff; color: white;">
+                    Categories
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for category in categories %}
+                    <li class="list-group-item">
+                        <a href="{% url 'category-posts' category_id=category.id %}" style="text-decoration: none; color: #007bff;">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 </div>

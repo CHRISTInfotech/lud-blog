@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog.apps.BlogConfig',
+    'blog',
+    'cadmin',
     'users.apps.UsersConfig',
     'crispy_forms',
     'crispy_bootstrap4',
     'ckeditor',
     'ckeditor_uploader',
+
 ]
 
 MIDDLEWARE = [
@@ -129,17 +131,22 @@ LOGIN_REDIRECT_URL = 'blog-index'
 
 LOGIN_URL = 'users-login'
 
-STATIC_URL = '/static/'
+
 
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = (BASE_DIR /'media')
 
-STATICFILES_DIRS = [
-   (BASE_DIR / 'static')
-]
 
-STATIC_ROOT = (BASE_DIR /'asset')
+STATIC_URL = '/static/'
+
+# For production, collectstatic will place files in this directory
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# During development, this will let Django serve static files from the app directories
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -147,6 +154,15 @@ EMAIL_HOST_USER = 'letusdream@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'nikhilravindren01@gmail.com'
+EMAIL_HOST_PASSWORD = 'rtif doyz xfpe kdti'  # Use the generated app password here
+DEFAULT_FROM_EMAIL = 'nikhilravindren01@gmail.com'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

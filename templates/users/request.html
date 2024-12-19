@@ -1,5 +1,5 @@
 {% extends 'partials/base.html' %}
-{% block title %}Login Page{% endblock %}
+{% block title %}Request here...{% endblock %}
 {% block content %}
 <link href="https://bootswatch.com/5/minty/bootstrap.min.css" rel="stylesheet">
 
@@ -9,7 +9,7 @@
             <div class="col-md-5">
                 <div class="card my-3 shadow">
                     <div class="card-body">
-                        <h4>Login Page</h4>
+                        <h4>Apply for your account here...</h4>
                         <hr>
                         {% if msg %}
                         <ul>
@@ -18,23 +18,16 @@
                         {% endif %}
                         <form method="post">
                             {% csrf_token %}
-                            <label for="username">Username:</label>
-                            <input type="text" name="username" id="username" required class="form-control mb-3">
+                            <label for="username">Name</label>
+                            <input type="text" name="name" id="username" required class="form-control mb-3">
                             
-                            <label for="password">Password:</label>
-                            <input type="password" name="password" id="password" required class="form-control mb-3">
+                            <label for="password">Email</label>
+                            <input type="email" name="email" id="password" required class="form-control mb-3">
                             
-                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            <button type="submit" class="btn btn-primary btn-block">Send</button>
                         </form>
                         <hr>
-                        <div class="text-center my-3">
-                            <a href="">Forget Password</a>
-                        </div>
                         <hr>
-                        <div class="text-center">
-                            <p>dont have an account?</p>
-                            <a class="btn btn-success" href="{% url 'send_request' %}">Request For Account</a>
-                        </div>
                     </div>
                 </div>
             </div>

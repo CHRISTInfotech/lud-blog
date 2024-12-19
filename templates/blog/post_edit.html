@@ -10,10 +10,25 @@
                 <div class="card-body">
                     <form method="POST">
                         {% csrf_token %}
-                        {{ form.media }} 
-                        {{ form|crispy }}
-                        <input class="btn btn-primary btn-sm" type="submit" value="Save">
-                    </form>
+                        <div class="form-group">
+                          <label for="title">Title</label>
+                          <input type="text" name="title" id="title" class="form-control" placeholder="Enter Title" required value="{{ post.title }}">
+                        </div>
+                        <div class="form-group">
+                          <label for="content">Content</label>
+                          <textarea name="content" id="content" class="form-control" rows="5" placeholder="Enter Content" required>{{ post.content }}</textarea>
+                        </div>
+                        <div class="form-group">
+                          <label for="category">Category</label>
+                          <select name="category" id="category" class="form-control">
+                            <option value="{{post.category.id}}"  selected>{{post.category}}</option>
+                            {% for category in all %}
+                              <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                      </form>
                 </div>
             </div>
         </div>

@@ -17,7 +17,7 @@ class Post(models.Model):
     content = RichTextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
-    category = models.CharField(max_length=255, default='category')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_archived = models.BooleanField(default=False)  # New field to indicate if a post is archived
     is_approved = models.BooleanField(default=False)
 

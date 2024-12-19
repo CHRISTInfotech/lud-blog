@@ -1,11 +1,10 @@
 {% extends 'partials/base.html' %}
 {% block title %}Home Page{% endblock %}
-{% load crispy_forms_tags %}
 {% block content %}
 {% load static %}
-
 <div class="container" style="padding-top: 50px;">
     <div class="row mt-5 pt-3">
+        {% if posts %}
         {% for post in posts %}
         <div class="col-md-6 mb-4">
             <div class="card shadow">
@@ -17,11 +16,16 @@
                         </div>
                         <div class="col-md-8">
                             <small>{{ post.date_created }}</small>
+                            {% if post.is_approved %}
+                            <small style="color: green;">post approved</small>
+                            {% else %}
+                            <small style="color: red;">post is not approved yet</small>
+                            {% endif %}
                             <hr>
                             <a class="h3" href="{% url 'blog-post-detail' post.id %}">{{ post.title }}</a>
                             <p class="text-justify my-3">
                                 {{ post.content|truncatewords:30|safe }}
-                                {% if post.content|length > 30 %}
+                                {% if post.content %}
                                 <a href="{% url 'blog-post-detail' post.id %}">Read More</a>
                                 {% endif %}
                             </p>
@@ -31,6 +35,9 @@
             </div>
         </div>
         {% endfor %}
+        {% else %}
+        <h3>you dont have any blogs yet!</h3>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

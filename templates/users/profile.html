@@ -68,8 +68,17 @@
                     <div class="col-md-8">
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
-                            {{ u_form|crispy }}
-                            {{ p_form|crispy }}
+                            <label for="image">Profile Image:</label>
+                            <input type="file" name="image" id="image"><br>
+                            
+                            <label for="linkedin_id">LinkedIn ID:</label>
+                            <input type="text" name="linkedin_id" id="linkedin_id" value="{{ profile.linkedin_id }}"><br>
+                        
+                            <label for="organization">Organization:</label>
+                            <input type="text" name="organization" id="organization" value="{{ profile.organization }}"><br>
+                        
+                            <label for="designation">Designation:</label>
+                            <input type="text" name="designation" id="designation" value="{{ profile.designation }}"><br>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" style="font-family: -apple-system,BlinkMacSystemFont;">Cancel</button>
                                 <button type="submit" class="btn btn-primary btn-sm" style="font-family: -apple-system, BlinkMacSystemFont;">Save</button>

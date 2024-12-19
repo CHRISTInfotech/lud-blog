@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Request Table</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            background-color: #000; /* Full black background */
+            color: #fff; /* White text */
+        }
+
+        h1 {
+            display: flex;
+            justify-content: space-between; /* Align title and dropdown/button */
+            align-items: right;
+            padding: 20px;
+            color: #fff;
+            background:  #121317; /* Royal Blue */
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 select, h1 button {
+            background-color: #3b3f4a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        h1 select:hover, h1 button:hover {
+            background-color: #1d1f24;
+        }
+
+        h1 button {
+            margin-left: 15px;
+        }
+
+        /* Space Background */
+        .space-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 60%);
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: star-float 15s linear infinite;
+        }
+
+        .star.small {
+            width: 2px;
+            height: 2px;
+            animation-duration: 10s;
+        }
+
+        .star.medium {
+            width: 4px;
+            height: 4px;
+            animation-duration: 12s;
+        }
+
+        .star.large {
+            width: 6px;
+            height: 6px;
+            animation-duration: 15s;
+        }
+
+        @keyframes star-float {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+            100% {
+                transform: translate3d(0, 300px, 0);
+            }
+        }
+
+        /* Table Styles */
+        table {
+            width: 80%;
+            margin: 40px auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1); /* Transparent table background */
+            backdrop-filter: blur(10px); /* Apply a blur effect to the background */
+            transform: translateY(10px);
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+
+        table:hover {
+            transform: translateY(0);
+        }
+
+        th, td {
+            padding: 15px 25px;
+            text-align: center;
+            font-size: 18px;
+            color: #fff; /* White text for readability */
+        }
+
+        th {
+            background:  #121317; /* Royal Blue */
+            color: white;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        td {
+            background-color: rgba(255, 255, 255, 0.2); /* Slight transparent white for table cells */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(255, 255, 255, 0.15); /* Slightly darker transparent background for even rows */
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+        }
+
+        .accept-btn {
+            background: #00071b; /* Royal Blue */
+            color: white;
+            font-weight: bold;
+        }
+
+        .reject-btn {
+            background: #130000; /* Dark Red */
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            background-color: #3b3f4a; /* Royal Blue */
+            color: white;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background-color: #1d1f24; /* Lighter Royal Blue */
+        }
+
+        .pagination .current-page {
+            background-color: #1f2124; /* Slightly darker Royal Blue for active page */
+            cursor: default;
+        }
+        .form-container {
+        width: 70%; /* Reduced the width */
+        margin-left: 10px ; /* Centered and adjusted margins */
+        padding: 10px; /* Reduced padding */
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px; /* Slightly smaller border radius */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px); /* Adjusted blur for a lighter effect */
+    }
+
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .form-row input[type="text"] {
+        width: 70%; /* Adjusted width for smaller container */
+        padding: 8px; /* Reduced padding for smaller input field */
+        font-size: 14px; /* Reduced font size */
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .form-row button {
+        padding: 2px 4px; /* Adjusted button size */
+        font-size: 14px; /* Smaller font size */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #00071b;
+        color: white;
+        font-weight: bold;
+        transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+
+    .form-row button:hover {
+        transform: translateY(-2px);
+    }
+    .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: #040704;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    color: #e74c3c;
+    padding: 8px;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #ddd;
+}
+.approve-btn {
+            color: white;
+            background-color: rgb(29, 31, 29);
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .approve-btn.disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+        .filter-btn {
+            left: 10px;
+            margin-right: 10px;
+            padding: 5px 10px;
+            background-color: #1d1e1f;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+        }
+        .filter-btn.active {
+            background-color: #262728;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Space Background -->
+    <div class="space-background">
+        <div class="star small" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
+        <div class="star medium" style="top: 50%; left: 40%; animation-delay: 5s;"></div>
+        <div class="star large" style="top: 30%; left: 70%; animation-delay: 2s;"></div>
+        <div class="star small" style="top: 70%; left: 80%; animation-delay: 1s;"></div>
+        <div class="star medium" style="top: 20%; left: 60%; animation-delay: 3s;"></div>
+        <div class="star large" style="top: 80%; left: 10%; animation-delay: 4s;"></div>
+        <div class="star small" style="top: 40%; left: 90%; animation-delay: 6s;"></div>
+        <div class="star small" style="top: 60%; left: 15%; animation-delay: 8s;"></div>
+    </div>
+
+    <!-- Content Section -->
+    <h1>
+        Admin Panal
+        <!-- Category Dropdown and Add Category Button -->
+        <a href="{% url 'blog_requests' %}" style="font-size: medium; text-decoration: none;color: #f1f1f1;margin-left: 60%;">Home</a>
+<a href="{% url 'post_request' %}" style="font-size: medium; text-decoration: none; color: #f1f1f1;">Post Request</a>
+
+        <!-- <div style="display: flex; align-items: center;">
+            <div class="dropdown">
+                <button class="dropbtn">Category</button>
+                <div class="dropdown-content">
+                        </a>
+                </div>
+            </div>
+            <div class="form-container">
+                <form method="POST">
+                    
+                    <div class="form-row">
+                        <input type="text" name="name" placeholder="Enter category name" required>
+                        <button type="submit">Add</button>
+                    </div>
+                </form>
+                    <p style="color: red; text-align: center;"></p>
+            </div>
+        </div> -->
+    </h1>
+    <div style="margin-top: 10px;margin-left: 70%;">
+        <a href="?filter=all" class="filter-btn {% if filter_option == 'all' %}active{% endif %}">All</a>
+        <a href="?filter=accepted" class="filter-btn {% if filter_option == 'accepted' %}active{% endif %}">Accepted</a>
+        <a href="?filter=pending" class="filter-btn {% if filter_option == 'pending' %}active{% endif %}">Pending</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Author</th>
+                <th>Date Created</th>
+                <th>Category</th>
+                <th>Archived</th>
+                <th>Approved</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in page_obj %}
+                <tr>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.content|truncatechars:100 }}</td> <!-- Truncate long content -->
+                    <td>{{ post.author }}</td>
+                    <td>{{ post.date_created|date:"Y-m-d H:i" }}</td>
+                    <td>{{ post.category }}</td>
+                    <td>{{ post.is_archived|yesno:"Yes,No" }}</td>
+                    <td>
+                        {% if post.is_approved %}
+                            <button class="approve-btn disabled" disabled>Approved</button>
+                        {% else %}
+                            <a href="{% url 'approve_post' post.id %}" class="approve-btn">Approve</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No posts available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+
+</body>
+</html>
