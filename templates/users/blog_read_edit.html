@@ -1,0 +1,341 @@
+{% extends 'partials/home_base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}{{ blog.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row g-4">
+        <!-- Left Sidebar -->
+        <div class="col-lg-3 order-lg-1">
+            <!-- Author Profile -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body text-center">
+                    <img src="{% if blog.author.userprofile.profile_picture %}{{ blog.author.userprofile.profile_picture.url }}{% else %}{% static 'default_profile.png' %}{% endif %}" 
+                         class="rounded-circle mb-3" 
+                         style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="card-title">{{ blog.author.get_full_name }}</h5>
+                    <p class="card-text text-muted small">{{ blog.author.userprofile.bio|truncatechars:60 }}</p>
+                    <a href="{% url 'user_profile' blog.author.pk %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-person-circle"></i> View Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Related Blogs -->
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Related Articles</h5>
+                    <div class="related-posts" style="max-height: 60vh; overflow-y: auto;">
+                        {% for related_blog in related_blogs %}
+                        <div class="mb-3">
+                            <div class="card border-0 hover-shadow">
+                                <img src="{{ related_blog.image.url }}" class="card-img-top" style="height: 120px; object-fit: cover;">
+                                <div class="card-body">
+                                    <a href="{% url 'blog_detail' related_blog.id %}" class="text-decoration-none text-dark">
+                                        <h6 class="card-title">{{ related_blog.title|truncatechars:50 }}</h6>
+                                    </a>
+                                    <div class="d-flex justify-content-between small text-muted">
+                                        <span>{{ related_blog.created_at|date:"M d, Y" }}</span>
+                                        <span>
+                                            <i class="bi bi-hand-thumbs-up"></i> {{ blog.likes }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-newspaper display-6"></i>
+                            <p class="mt-2">No related articles found</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9 order-lg-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Article Header -->
+                    <header class="mb-4">
+                        <h1 class="card-title display-5 mb-3">{{ blog.title }}</h1>
+                        <div class="d-flex align-items-center gap-3 text-muted small">
+                            <img src="{% if blog.author.userprofile.profile_picture %}{{ blog.author.userprofile.profile_picture.url }}{% else %}{% static 'default_profile.png' %}{% endif %}" 
+                                 class="rounded-circle" 
+                                 style="width: 40px; height: 40px; object-fit: cover;">
+                            <div>
+                                <span class="fw-bold">{{ blog.author.get_full_name }}</span>
+                                <span class="mx-2">•</span>
+                                <span>{{ blog.created_at|date:"F d, Y" }}</span>
+                                <span class="mx-2">•</span>
+                                <span>{{ blog.author.email }} </span> 
+                            </div>
+                        </div>
+                    </header>
+                         <!-- Article Content -->
+                
+                <!-- Article Content -->
+<div class="card mb-4">
+    <!-- Categories -->
+    {% if blog.categories.all %}
+    <div class="card-header bg-white border-bottom-0">
+        <div class="d-flex flex-wrap gap-2">
+            {% for category in blog.categories.all %}
+            <span class="badge bg-primary bg-opacity-10 text-primary">
+                {{ category.name }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Featured Image -->
+    {% if blog.image %}
+    <img src="{{ blog.image.url }}" 
+         class="card-img-top rounded-0" 
+         alt="{{ blog.title }}"
+         style="max-height: 500px; object-fit: cover;">
+    {% endif %}
+
+    <!-- Article Body -->
+    <div class="card-body">
+        <div class="article-content">
+            {{ blog.content|safe }}
+        </div>
+
+        {% comment %} <!-- Tags -->
+        {% if blog.tags.all %}
+        <div class="mt-4 pt-3 border-top">
+            <h6 class="text-muted mb-2">Tags:</h6>
+            <div class="d-flex flex-wrap gap-2">
+                {% for tag in blog.tags.all %}
+                <a href="{% url 'tag_blogs' tag.slug %}" 
+                   class="badge bg-secondary bg-opacity-10 text-secondary text-decoration-none">
+                    #{{ tag.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %} {% endcomment %}
+    </div>
+
+    <!-- Interaction Section -->
+    {% comment %} <div class="card-footer bg-white border-top">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+                <!-- Like Button -->
+                <button id="like-button" onclick="handleLike()" 
+                class="btn btn-outline-primary btn-sm rounded-pill pe-3">
+            <i class="bi bi-hand-thumbs-up{% if request.session.blog_votes|get_item:blog.id == 'like' %}-fill{% endif %}"></i>
+            <span id="like-count" class="ms-1">{{ blog.likes }}</span>
+        </button>
+        
+        <button id="dislike-button" onclick="handleDislike()" 
+                class="btn btn-outline-danger btn-sm rounded-pill pe-3 ms-2">
+            <i class="bi bi-hand-thumbs-down{% if request.session.blog_votes|get_item:blog.id == 'dislike' %}-fill{% endif %}"></i>
+            <span id="dislike-count" class="ms-1">{{ blog.dislikes }}</span>
+        </button> {% endcomment %}
+
+                {% comment %} <!-- Comments -->
+                <button class="btn btn-outline-secondary btn-sm rounded-pill pe-3 ms-2">
+                    <i class="bi bi-chat"></i>
+                    <span class="ms-1">{{ blog.comments.count }}</span>
+                </button> {% endcomment %}
+            </div>
+
+            <!-- Share Dropdown -->
+            {% comment %} <div class="dropdown">
+                <button class="btn btn-outline-dark btn-sm rounded-pill dropdown-toggle" 
+                        type="button" 
+                        data-bs-toggle="dropdown">
+                    <i class="bi bi-share"></i> Share
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" 
+                           href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                           target="_blank">
+                            <i class="bi bi-facebook me-2"></i> Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" 
+                           href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ blog.title }}" 
+                           target="_blank">
+                            <i class="bi bi-twitter me-2"></i> Twitter
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" 
+                           href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ blog.title }}" 
+                           target="_blank">
+                            <i class="bi bi-linkedin me-2"></i> LinkedIn
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <button class="dropdown-item" 
+                                onclick="copyToClipboard('{{ request.build_absolute_uri }}')">
+                            <i class="bi bi-link-45deg me-2"></i> Copy Link
+                        </button>
+                    </li>
+                </ul>
+            </div> {% endcomment %}
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+{% comment %} <div class="text-center mb-5">
+    <a href="{% url 'blog-home' %}" 
+       class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+        <i class="bi bi-arrow-left"></i> Back to Articles
+    </a>
+</div> {% endcomment %}
+                 
+                    <!-- Rest of your article content remains similar -->
+                    <!-- Make sure to use Bootstrap classes for styling -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .related-posts::-webkit-scrollbar {
+        width: 6px;
+    }
+    .related-posts::-webkit-scrollbar-track {
+        background: #f8f9fa;
+    }
+    .related-posts::-webkit-scrollbar-thumb {
+        background: #dee2e6;
+        border-radius: 4px;
+    }
+    .hover-shadow {
+        transition: box-shadow 0.3s ease;
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+</style>
+{% endblock %}
+{% block extra_js %}
+<script>
+    function handleLike() {
+        {% if not user.is_authenticated %}
+            showLoginAlert();
+            return;
+        {% endif %}
+
+        fetch("{% url 'like_blog' blog.id %}", {
+            // ... rest of the fetch code
+        })
+        .then(response => {
+            if(response.status === 403) {
+                showLoginAlert();
+            }
+            return response.json();
+        })
+        // ... rest of the handling
+    }
+
+    function handleDislike() {
+        {% if not user.is_authenticated %}
+            showLoginAlert();
+            return;
+        {% endif %}
+
+        fetch("{% url 'dislike_blog' blog.id %}", {
+            // ... rest of the fetch code
+        })
+        .then(response => {
+            if(response.status === 403) {
+                showLoginAlert();
+            }
+            return response.json();
+        })
+        // ... rest of the handling
+    }
+
+    function showLoginAlert() {
+        const toast = new bootstrap.Toast(document.getElementById('loginToast'));
+        toast.show();
+    }function handleLike() {
+        fetch("{% url 'like_blog' blog.id %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('like-count').textContent = data.likes;
+                document.getElementById('dislike-count').textContent = data.dislikes;
+                
+                const likeIcon = document.querySelector('#like-button i');
+                const dislikeIcon = document.querySelector('#dislike-button i');
+                
+                // Update icons based on current vote
+                if(data.current_vote === 'like') {
+                    likeIcon.classList.add('bi-hand-thumbs-up-fill');
+                    likeIcon.classList.remove('bi-hand-thumbs-up');
+                    dislikeIcon.classList.remove('bi-hand-thumbs-down-fill');
+                } else {
+                    likeIcon.classList.remove('bi-hand-thumbs-up-fill');
+                    likeIcon.classList.add('bi-hand-thumbs-up');
+                }
+            }
+        });
+    }
+    
+    function handleDislike() {
+        fetch("{% url 'dislike_blog' blog.id %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('dislike-count').textContent = data.dislikes;
+                document.getElementById('like-count').textContent = data.likes;
+                
+                const dislikeIcon = document.querySelector('#dislike-button i');
+                const likeIcon = document.querySelector('#like-button i');
+                
+                if(data.current_vote === 'dislike') {
+                    dislikeIcon.classList.add('bi-hand-thumbs-down-fill');
+                    dislikeIcon.classList.remove('bi-hand-thumbs-down');
+                    likeIcon.classList.remove('bi-hand-thumbs-up-fill');
+                } else {
+                    dislikeIcon.classList.remove('bi-hand-thumbs-down-fill');
+                    dislikeIcon.classList.add('bi-hand-thumbs-down');
+                }
+            }
+        });
+    }
+</script>
+
+<!-- Add this login toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="loginToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body">
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+            Please <a href="" class="text-primary">login</a> to like/dislike articles
+        </div>
+    </div>
+</div>
+{% endblock %}

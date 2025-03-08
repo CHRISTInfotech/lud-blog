@@ -1,0 +1,115 @@
+{% extends 'partials/admin_base.html' %}
+
+{% block title %}Invite Users{% endblock %}
+
+{% block content %}
+<div class="main p-1 rounded  mx-auto max-w-full md:max-w-3xl mt-6 bg-white">
+    
+    <!-- Toggle Between Single and Bulk Invite -->
+    <div class="flex justify-center mb-6">
+        <button type="button" id="single-invite-btn" class="toggle-btn bg-blue-500 text-white px-6 py-2 rounded-l-lg focus:outline-none transition transform hover:scale-105">
+            Single Invite
+        </button>
+        <button type="button" id="bulk-invite-btn" class="toggle-btn bg-gray-300 text-black px-6 py-2 rounded-r-lg focus:outline-none transition transform hover:scale-105">
+            Bulk Invite
+        </button>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+        {% csrf_token %}
+
+        <!-- Success/Error Messages -->
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="alert-message p-3 rounded-lg shadow-md text-white font-semibold text-center 
+                {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'warning' %}bg-yellow-500{% elif message.tags == 'error' %}bg-red-500{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Single Invite Section -->
+        <div id="single-invite-section">
+            <div class="mb-4">
+                <label for="name" class="block text-lg font-semibold mb-2">Name</label>
+                <div class="flex items-center border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-blue-500 transition">
+                    <span class="text-gray-500 text-lg">👤</span>
+                    <input type="text" id="name" name="name" class="w-full ml-3 outline-none bg-transparent text-lg" placeholder="Enter Name">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-lg font-semibold mb-2">Email</label>
+                <div class="flex items-center border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-blue-500 transition">
+                    <span class="text-gray-500 text-lg">📩</span>
+                    <input type="email" id="email" name="email" placeholder="Enter Email" required class="w-full ml-3 outline-none bg-transparent text-lg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Invite Section (Initially Hidden) -->
+        <div id="bulk-invite-section" class="hidden">
+            <div class="mb-4">
+                <label for="csv_file" class="block text-lg font-semibold mb-2">Upload CSV File (Name, Email)</label>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" class="w-full p-3 border border-gray-300 rounded-lg bg-white shadow-md text-lg">
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="message" class="block text-lg font-semibold mb-2">Default Message</label>
+            <div class="flex items-start border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-blue-500 transition">
+                <span class="text-gray-500 text-lg">📩</span>
+                <textarea id="message" name="message" class="w-full ml-3 outline-none bg-transparent resize-none text-lg" rows="2">You are invited to join our blog platform. Click the link below to register.</textarea>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="mt-4 w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition transform hover:scale-105 shadow-md text-lg">
+            🔗 Send Invite
+        </button>
+    </form>
+</div>
+
+<!-- JavaScript for Toggle -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const singleBtn = document.getElementById("single-invite-btn");
+    const bulkBtn = document.getElementById("bulk-invite-btn");
+    const singleSection = document.getElementById("single-invite-section");
+    const bulkSection = document.getElementById("bulk-invite-section");
+    const emailField = document.getElementById("email");
+
+    singleBtn.addEventListener("click", function() {
+        singleSection.classList.remove("hidden");
+        bulkSection.classList.add("hidden");
+        emailField.required = true;
+
+        singleBtn.classList.add("bg-blue-500", "text-white");
+        singleBtn.classList.remove("bg-gray-300", "text-black");
+        bulkBtn.classList.add("bg-gray-300", "text-black");
+        bulkBtn.classList.remove("bg-blue-500", "text-white");
+    });
+
+    bulkBtn.addEventListener("click", function() {
+        singleSection.classList.add("hidden");
+        bulkSection.classList.remove("hidden");
+        emailField.required = false;
+
+        bulkBtn.classList.add("bg-blue-500", "text-white");
+        bulkBtn.classList.remove("bg-gray-300", "text-black");
+        singleBtn.classList.add("bg-gray-300", "text-black");
+        singleBtn.classList.remove("bg-blue-500", "text-white");
+    });
+});
+</script>
+
+<!-- Auto Remove Messages After 5 Sec -->
+<script>
+setTimeout(function() {
+    document.querySelectorAll('.alert-message').forEach(msg => msg.style.display = 'none');
+}, 5000);
+</script>
+
+{% endblock content %}

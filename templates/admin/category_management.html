@@ -1,0 +1,212 @@
+{% extends 'partials/admin_base.html' %}
+
+{% block content %}
+<style>
+    /* Consistent table styling */
+    #categoriesTable {
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+        margin: 0.5rem 0;
+        width: 100%;
+        font-size: 0.875rem;
+    }
+
+    #categoriesTable thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        text-align: left;
+    }
+
+    #categoriesTable tbody td {
+        background-color: white;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+    }
+
+    #categoriesTable tbody tr:hover td {
+        background-color: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Status badges */
+    .status-badge {
+        padding: 0.15rem 0.6rem;
+        border-radius: 0.875rem;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-active { 
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-disabled {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    /* Action buttons */
+    .action-button {
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .enable-button {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .enable-button:hover {
+        background-color: #2563eb;
+    }
+
+    .disable-button {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .disable-button:hover {
+        background-color: #dc2626;
+    }
+
+    .delete-button {
+        background-color: #6b7280;
+        color: white;
+    }
+
+    .delete-button:hover {
+        background-color: #4b5563;
+    }
+</style>
+
+<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
+    <!-- Messages Section -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Add Category Form -->
+    <div class="mb-3 p-6 bg-gray-50 rounded-lg">
+        <h2 class="text-xl font-semibold text-gray-900 mb-2">Add New Category</h2>
+        <form method="POST" action="{% url 'admin_manage_categories' %}" class="flex gap-4">
+            {% csrf_token %}
+            <input type="text" name="category_name" 
+                   class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                   placeholder="Enter category name"
+                   required>
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Add Category
+            </button>
+        </form>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <table id="categoriesTable" class="w-full">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td class="font-medium text-gray-900">{{ category.id }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>
+                        <span class="status-badge {% if category.is_active %}status-active{% else %}status-disabled{% endif %}">
+                            {% if category.is_active %}Active{% else %}Disabled{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="flex gap-2">
+                            <!-- Enable Button -->
+                            {% if not category.is_active %}
+                            <form method="POST" action="{% url 'admin_enable_category' category.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="action-button enable-button">
+                                    Enable
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Disable Button -->
+                            {% if category.is_active %}
+                            <form method="POST" action="{% url 'admin_disable_category' category.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="action-button disable-button">
+                                    Disable
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-gray-500 py-4">No categories found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    const table = $('#categoriesTable').DataTable({
+        processing: true,
+        serverSide: false,
+        pageLength: 4,
+        lengthMenu: [[4,3], [4,3]],
+        paging: true,
+        responsive: true,
+        dom: '<"flex justify-between items-center mb-3"lf>rt<"flex justify-between items-center mt-3"ip>',
+        language: {
+            paginate: {
+                next: 'Next →',
+                previous: '← Prev'
+            },
+            search: "_INPUT_",
+            searchPlaceholder: "Search categories...",
+            info: "Showing _START_ to _END_ of _TOTAL_",
+            lengthMenu: "Show _MENU_",
+            infoEmpty: "No entries found",
+            zeroRecords: "No matching categories found",
+        },
+        columnDefs: [
+            { targets: 0, width: '10%' },
+            { targets: 1, width: '40%' },
+            { targets: 2, width: '20%' },
+            { targets: 3, width: '30%', orderable: false }
+        ],
+        autoWidth: false,
+        order: [[0, 'asc']]
+    });
+});
+</script>
+
+{% endblock %}

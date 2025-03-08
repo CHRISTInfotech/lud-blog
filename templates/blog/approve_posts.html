@@ -1,8 +1,0 @@
-<h1>Unapproved Blog Posts</h1>
-{% for post in posts %}
-    <div>
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.content|truncatewords:20 }}</p>
-        <a href="{% url 'approve_post' post.id %}">Approve</a>
-    </div>
-{% endfor %}

@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.CheckUserActiveMiddleware',  # Add this line
 ]
 
 ROOT_URLCONF = 'ludblog.urls'
@@ -72,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context.user_profile_context',
             ],
         },
     },
@@ -148,20 +150,20 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'letusdream@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'letusdream@gmail.com'
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'nikhilravindren01@gmail.com'
-EMAIL_HOST_PASSWORD = 'rtif doyz xfpe kdti'  # Use the generated app password here
-DEFAULT_FROM_EMAIL = 'nikhilravindren01@gmail.com'
+EMAIL_HOST_USER = 'pesaccout2002@gmail.com'
+EMAIL_HOST_PASSWORD = 'gtlp homk ewwj jesb'  # Use the generated app password here
+DEFAULT_FROM_EMAIL = 'pesaccout2002@gmail.com'
 
 
 # Default primary key field type
