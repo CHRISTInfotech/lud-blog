@@ -1,5 +1,6 @@
 # media folder with the images
 media/
+static/
 
 # database file
 db.sqlite3
@@ -9,3 +10,13 @@ venv
 
 # pycache files
 *.pyc
+
+.vscode/
+
+blog/__pycache__/
+blog/migrations/
+cadmin/__pycache__/
+cadmin/migrations/
+ludblog/__pycache__/
+users/__pycache__/
+users/migrations/
