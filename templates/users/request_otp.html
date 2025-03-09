@@ -1,0 +1,104 @@
+{% extends 'partials/home_base.html' %}
+
+{% block extra_css %}
+<style>
+    .main-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 70vh; /* Full viewport height for centering */
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .login-side {
+        position: relative;
+        z-index: 2;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 3rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .login-container h2 {
+        margin-bottom: 2.5rem;
+        color: #333;
+        font-size: 2rem;
+    }
+
+    .input-group {
+        margin-bottom: 1rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .input-group:focus-within {
+        transform: scale(1.02);
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        background-color: #007bff;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .text-center a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .text-center a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="overlay"></div>
+    <div class="login-side">
+        <div class="login-container">
+            <h2>Login</h2>
+            {% if error %}
+                <div style="color: red; font-weight: bold;">{{ error }}</div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <!-- Email Field with Icon -->
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
+                </div>
+
+                <!-- Register Button -->
+                <button type="submit" class="btn btn-primary">Send OTP</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

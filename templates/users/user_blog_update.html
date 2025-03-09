@@ -1,0 +1,153 @@
+
+{% extends base_template %}
+{% comment %} 
+{% block title %}Your Blogs{% endblock %} {% endcomment %}
+
+{% block content %}
+<style>
+    /* Consistent table styling */
+    #blogsTable {
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+        margin: 0.5rem 0;
+        width: 100%;
+        font-size: 0.875rem;
+    }
+
+    #blogsTable thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        text-align: left;
+    }
+
+    #blogsTable tbody td {
+        background-color: white;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+    }
+
+    #blogsTable tbody tr:hover td {
+        background-color: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Status badges */
+    .status-badge {
+        padding: 0.15rem 0.6rem;
+        border-radius: 0.875rem;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-pending { 
+        background: #fffbeb;
+        color: #d97706;
+    }
+    .status-approved {
+        background: #ecfdf5;
+        color: #059669;
+    }
+    .status-rejected {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+</style>
+
+<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
+    {% comment %} <h1 class="text-xl font-semibold text-gray-900 mb-4">Your Blogs</h1> {% endcomment %}
+
+    <!-- Blogs Table -->
+    <table id="blogsTable" class="w-full">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for blog in blogs %}
+            <tr>
+                <td class="font-medium text-gray-900">{{ blog.title|truncatechars:40 }}</td>
+                <td>{{ blog.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <span class="status-badge 
+                        {% if blog.status == "Pending" %}status-pending
+                        {% elif blog.status == "accepted" %}status-approved
+                        {% else %}status-rejected{% endif %}">
+                        {{ blog.status }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex items-center gap-3">
+                        <a href="{% url 'blog_detail_while_editing' blog.id %}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </a>
+                        <a href="{% url 'user_edit_blog' blog.id %}" class="text-green-600 hover:text-green-800 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-gray-500 py-4">No blogs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    const table = $('#blogsTable').DataTable({
+        processing: true,
+        serverSide: false,
+        pageLength: 7,
+        lengthMenu: [[7,6,5], [7,6,5]],
+        paging: true,
+        responsive: true,
+        dom: '<"flex justify-between items-center mb-3"lf>rt<"flex justify-between items-center mt-3"ip>',
+        language: {
+            paginate: {
+                next: 'Next →',
+                previous: '← Prev'
+            },
+            search: "_INPUT_",
+            searchPlaceholder: "Search blogs...",
+            info: "Showing _START_ to _END_ of _TOTAL_",
+            lengthMenu: "Show _MENU_",
+            infoEmpty: "No entries found",
+            zeroRecords: "No matching blogs found",
+        },
+        columnDefs: [
+            { targets: 0, width: '40%' },
+            { targets: 1, width: '20%' },
+            { targets: 2, width: '20%' },
+            { targets: 3, width: '20%', orderable: false }
+        ],
+        autoWidth: false,
+        order: [[1, 'desc']]
+    });
+});
+</script>
+
+{% endblock %}

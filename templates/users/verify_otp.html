@@ -1,0 +1,105 @@
+{% extends 'partials/home_base.html' %}
+
+{% block extra_css %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: rgb(255, 255, 255);
+    }
+
+    .main-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 70vh; /* Full screen height for proper centering */
+        background-size: cover;
+        background-position: center;
+    }
+
+    .login-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 400px; /* Matches Send OTP page */
+    }
+
+    .input-group {
+        margin-bottom: 1rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .input-group:focus-within {
+        transform: scale(1.02);
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        width: 100%; /* Ensures full width */
+        height: 50px; /* Consistent height */
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        background-color: #007bff;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<div class="main-content">
+    <div class="login-container">
+        <h2>Verify OTP</h2>
+        
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        
+        {% if messages %}
+        {% for message in messages %}
+        <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
+        
+        <form id="otpForm" method="post">
+            {% csrf_token %}
+            <!-- Email Field -->
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="email" value="{{ request.session.email }}" placeholder="Email" readonly>
+            </div>
+            <!-- OTP Field -->
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input type="text" class="form-control" name="otp" id="otp" placeholder="Enter OTP" required>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Submit OTP</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

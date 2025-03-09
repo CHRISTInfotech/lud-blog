@@ -1,0 +1,186 @@
+{% extends 'partials/admin_base.html' %}
+
+{% comment %} {% block title %}User Management{% endblock %} {% endcomment %}
+
+{% block content %}
+<style>
+    /* Consistent table styling */
+    #usersTable {
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+        margin: 0.5rem 0;
+        width: 100%;
+        font-size: 0.875rem;
+    }
+
+    #usersTable thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        text-align: left;
+    }
+
+    #usersTable tbody td {
+        background-color: white;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+    }
+
+    #usersTable tbody tr:hover td {
+        background-color: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Status badges matching previous style */
+    .status-badge {
+        padding: 0.15rem 0.6rem;
+        border-radius: 0.875rem;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-active { 
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-disabled {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+
+<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
+    <!-- Header Section -->
+    <div class="header-container mb-4">
+        <h1 class="text-xl font-semibold text-gray-900">User Management</h1>
+    </div>
+
+    <!-- Table -->
+    <table id="usersTable" class="w-full">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Affiliation</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td class="font-medium text-gray-900">{{ u.name|default:"No Name"|truncatechars:20 }}</td>
+                <td>{{ u.user.email|truncatechars:25 }}</td>
+                <td>{{ u.affiliation|truncatechars:30 }}</td>
+                <td>
+                    <span id="statusBadge-{{ u.user.id }}" class="status-badge {% if u.user.is_active %}status-active{% else %}status-disabled{% endif %}">
+                        {% if u.user.is_active %}Active{% else %}Disabled{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <button 
+                        onclick="toggleUserStatus('{{ u.user.id }}')" 
+                        id="userButton-{{ u.user.id }}"
+                        class="px-3 py-1.5 rounded-md font-medium transition duration-200 text-white {% if u.user.is_active %}bg-red-500 hover:bg-red-600{% else %}bg-green-500 hover:bg-green-600{% endif %}"
+                    >
+                        {% if u.user.is_active %}Disable{% else %}Enable{% endif %}
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    const table = $('#usersTable').DataTable({
+        processing: true,
+        serverSide: false,
+        pageLength: 7,
+        lengthMenu: [[7,6,5], [7,6,5]],
+        paging: true,
+        responsive: true,
+        dom: '<"flex justify-between items-center mb-3"lf>rt<"flex justify-between items-center mt-3"ip>',
+        language: {
+            paginate: {
+                next: 'Next →',
+                previous: '← Prev'
+            },
+            search: "_INPUT_",
+            searchPlaceholder: "Search users...",
+            info: "Showing _START_ to _END_ of _TOTAL_",
+            lengthMenu: "Show _MENU_",
+            infoEmpty: "No entries found",
+            zeroRecords: "No matching users found",
+        },
+        columnDefs: [
+            { targets: 0, width: '20%' },
+            { targets: 1, width: '25%' },
+            { targets: 2, width: '25%' },
+            { targets: 3, width: '15%' },
+            { targets: 4, width: '15%', orderable: false }
+        ],
+        autoWidth: false,
+        order: [[0, 'asc']]
+    });
+});
+
+async function toggleUserStatus(userId) {
+    const button = document.getElementById(`userButton-${userId}`);
+    const statusBadge = document.getElementById(`statusBadge-${userId}`);
+    
+    button.disabled = true;
+    const isCurrentlyActive = statusBadge.textContent.trim() === "Active";
+
+    try {
+        const response = await fetch(`/cadmin/toggle-user/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || 'Failed to update user status');
+        }
+
+        // Update UI
+        statusBadge.textContent = data.is_active ? "Active" : "Disabled";
+        statusBadge.className = `status-badge ${data.is_active ? 'status-active' : 'status-disabled'}`;
+        button.textContent = data.is_active ? "Disable" : "Enable";
+        button.className = `px-3 py-1.5 rounded-md font-medium transition duration-200 text-white ${data.is_active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`;
+
+    } catch (error) {
+        alert("Error: " + error.message);
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function getCSRFToken() {
+    return document.querySelector("meta[name='csrf-token']")?.getAttribute("content") || '';
+}
+</script>
+
+{% endblock content %}

@@ -1,0 +1,69 @@
+{% extends base_template %}
+
+{% block title %}Edit Blog{% endblock %}
+
+{% block content %}
+<!-- Blog Edit Form -->
+<div class="main p-6 rounded shadow mx-auto max-w-3xl w-full mt-2 overflow-hidden">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="blogTitle" class="block text-lg font-semibold mb-1">Title</label>
+        <input type="text" name="title" id="blogTitle" class="w-full p-2 border border-gray-300 rounded mb-2" value="{{ blog.title }}" required>
+        
+        <label for="category" class="block text-lg font-semibold mb-2">Category</label>
+        <select id="category" name="category" class="w-full p-2 border border-gray-300 rounded mb-2">
+            {% for cat in categories %}
+            <option value="{{ cat.name }}" {% if cat.name == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <label class="block text-lg font-semibold mb-2">Blog Image</label>
+
+        <!-- Image Preview as Text -->
+        {% if blog.image %}
+        <p class="text-blue-600 cursor-pointer underline" onclick="openImageModal('{{ blog.image.url }}')">View Image</p>
+        {% else %}
+        <p class="text-gray-500">No Image Uploaded</p>
+        {% endif %}
+
+        <!-- File Input -->
+        <input type="file" name="image" id="blogImage" accept="image/*" class="w-full p-2 border border-gray-300 rounded mb-2">
+        
+        <label for="richTextEditor" class="block text-lg font-semibold mb-2">Content</label>
+        <textarea id="richTextEditor" name="content">{{ blog.content }}</textarea>
+
+        <!-- Buttons -->
+        <div class="flex flex-wrap gap-3 mt-4">
+            
+            {% if user.is_superuser and request.META.HTTP_REFERER == "/manage_blogs/" %}
+
+            <button type="submit" name="pending" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Save as Pending</button>
+            <button type="submit" name="approve" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Approve</button>
+            <button type="submit" name="reject" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Reject</button>
+            {% else %}
+            <button type="submit" name="update" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Save Changes</button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex justify-center items-center hidden" onclick="closeImageModal()">
+    <img id="modalImage" class="max-w-full max-h-full rounded shadow-lg">
+</div>
+
+<!-- JavaScript for Modal -->
+<script>
+    function openImageModal(imageUrl) {
+        document.getElementById('modalImage').src = imageUrl;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
+
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+    }
+</script>
+
+
+{% endblock %}

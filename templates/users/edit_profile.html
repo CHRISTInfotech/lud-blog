@@ -1,0 +1,64 @@
+{% extends 'partials/base.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="main p-6 rounded shadow mx-auto max-w-full mt-2 bg-gray-100">
+    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+        {% csrf_token %}
+
+        <!-- Name Field -->
+        <div class="mb-4">
+            <label for="name" class="block text-lg font-semibold mb-2">Name</label>
+            <input type="text" name="name" id="name" 
+                   class="w-full border border-gray-300 rounded-lg p-2"
+                   value="{{ user_profile.name }}" placeholder="Enter your name">
+        </div>
+
+        <!-- Email Field (Read-Only) -->
+        <div class="mb-4">
+            <label for="email" class="block text-lg font-semibold mb-2">Email</label>
+            <input type="email" id="email"
+                   class="w-full border border-gray-300 rounded-lg p-2 bg-gray-200 cursor-not-allowed"
+                   value="{{ user_profile.user.email }}" readonly>
+        </div>
+
+        <!-- Affiliation Field -->
+        <div class="mb-4">
+            <label for="affiliation" class="block text-lg font-semibold mb-2">Affiliation</label>
+            <input type="text" name="affiliation" id="affiliation" 
+                   class="w-full border border-gray-300 rounded-lg p-2"
+                   value="{{ user_profile.affiliation }}" placeholder="Your affiliation">
+        </div>
+
+        <!-- Profile Picture Upload -->
+        <div class="mb-4 text-center">
+            <label class="block text-gray-700 font-medium mb-2">Profile Picture</label>
+            <input type="file" name="profile_picture" id="profilePic" accept="image/*" class="hidden" onchange="previewImage(event)">
+            <label for="profilePic" class="cursor-pointer flex flex-col items-center justify-center border border-gray-300 rounded-lg p-3 bg-white hover:border-blue-500 hover:ring-2 hover:ring-blue-200 transition">
+                <img id="profilePreview" 
+     src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}https://via.placeholder.com/100{% endif %}" 
+     class="w-24 h-24 rounded-full object-cover mb-2" 
+     alt="Profile Preview">
+
+                <span class="text-blue-500">Upload Picture</span>
+            </label>
+        </div>
+
+        <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition transform hover:scale-105 shadow-md">
+            💾 Save Changes
+        </button>
+    </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('profilePreview');
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+{% endblock %}

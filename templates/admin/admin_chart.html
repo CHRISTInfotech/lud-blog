@@ -1,0 +1,131 @@
+{% extends 'partials/admin_base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+    }
+
+    h1 {
+        padding: 20px;
+        margin: 0;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        flex-shrink: 0;
+        color: #2c3e50;
+        font-size: 24px;
+    }
+
+    .chart-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-content: flex-start;
+        max-height: 80vh;
+    }
+
+    .chart-box {
+        flex: 1 1 400px;
+        height: 400px;
+        min-width: 300px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .chart-box:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<div class="chart-container">
+    <div class="chart-box" id="blog-status-chart"></div>
+    <div class="chart-box" id="category-chart"></div>
+    <div class="chart-box" id="top-authors-chart"></div>
+    <div class="chart-box" id="likes-dislikes-chart"></div>
+</div>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Blog Status Distribution
+        Highcharts.chart("blog-status-chart", {
+            chart: { type: 'pie' },
+            title: { text: 'Blog Status Distribution' },
+            series: [{
+                name: 'Blogs',
+                data: [
+                    {% for item in blog_status_data %}
+                    { name: "{{ item.status }}", y: {{ item.count }} },
+                    {% endfor %}
+                ]
+            }]
+        });
+
+        // Blogs Per Category
+        Highcharts.chart("category-chart", {
+            chart: { type: 'column' },
+            title: { text: 'Number of Blogs per Category' },
+            xAxis: { categories: [{% for item in category_data %}"{{ item.category__name }}",{% endfor %}] },
+            yAxis: { title: { text: 'Number of Blogs' } },
+            series: [{
+                name: 'Blogs',
+                data: [{% for item in category_data %}{{ item.count }},{% endfor %}]
+            }]
+        });
+
+        // Top Authors
+        Highcharts.chart("top-authors-chart", {
+            chart: { type: 'bar' },
+            title: { text: 'Top 5 Authors by Blog Count' },
+            xAxis: { categories: [{% for author in top_authors %}"{{ author.author__username }}",{% endfor %}] },
+            yAxis: { title: { text: 'Number of Blogs' } },
+            series: [{
+                name: 'Blogs',
+                data: [{% for author in top_authors %}{{ author.count }},{% endfor %}]
+            }]
+        });
+
+        // Likes vs Dislikes
+        Highcharts.chart("likes-dislikes-chart", {
+            chart: { type: 'bar' },
+            title: { text: 'Likes vs Dislikes' },
+            xAxis: { categories: ['Likes', 'Dislikes'] },
+            series: [{
+                name: 'Reactions',
+                data: [{{ total_likes }}, {{ total_dislikes }}]
+            }]
+        });
+
+        // Top Performing Blogs
+        Highcharts.chart("top-performing-blogs", {
+            chart: { type: 'bar' },
+            title: { text: 'Top Performing Blogs' },
+            xAxis: { categories: [{% for blog in top_blogs %}"{{ blog.title }}",{% endfor %}] },
+            yAxis: { title: { text: 'Views' } },
+            series: [{
+                name: 'Views',
+                data: [{% for blog in top_blogs %}{{ blog.views }},{% endfor %}]
+            }]
+        });
+
+    });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,48 @@
+
+{% extends 'partials/admin_base.html' %}
+
+{% block title %}View All Blogs{% endblock %}
+
+{% block content %}
+<!-- Blog Form -->
+<div class="main p-6 rounded shadow mx-auto max-w-full mt-2">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <label for="blogTitle" class="block text-lg font-semibold mb-2">Title</label>
+        <input type="text" name="title" id="blogTitle" class="w-full p-2 border border-gray-300 rounded mb-2" placeholder="Enter blog title...">
+        
+        <label for="category" class="block text-lg font-semibold mb-2">Category</label>
+        <select id="category" name="category" class="w-full p-2 border border-gray-300 rounded mb-2">
+            {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <label for="blogImage" class="block text-lg font-semibold mb-2">Blog Image</label>
+        <input type="file" name="image" id="blogImage" accept="image/*" class="w-full p-2 border border-gray-300 rounded mb-2" onchange="previewBlogImage(event)">
+        
+        <div class="mb-2">
+            <img id="imagePreview" class="w-full max-h-64 object-cover rounded shadow hidden" alt="Blog Image Preview">
+        </div>
+        
+        <label for="richTextEditor" class="block text-lg font-semibold mb-2">Content</label>
+        <textarea id="richTextEditor" name="content"></textarea>
+        
+        <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Submit</button>
+    </form>
+</div>
+
+{% comment %} <script>
+    function previewBlogImage(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const output = document.getElementById('imagePreview');
+            output.src = reader.result;
+            output.classList.remove('hidden');
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script> {% endcomment %}
+
+{% endblock content%}

@@ -1,0 +1,255 @@
+{% extends 'partials/admin_base.html' %}
+
+{% block title %}View All Blogs{% endblock %}
+
+{% block content %}
+<style>
+    /* Compact Table Styling */
+    #blogTable {
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+        margin: 0.5rem 0;
+        width: 100%;
+        font-size: 0.875rem;
+    }
+
+    #blogTable thead th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        text-align: left;
+    }
+
+    #blogTable tbody td {
+        background-color: white;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+    }
+
+    #blogTable tbody tr:hover td {
+        background-color: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pagination */
+    .dataTables_paginate .paginate_button {
+        padding: 0.25rem 0.75rem !important;
+        margin: 0 0.125rem !important;
+        font-size: 0.875rem;
+        border-radius: 0.25rem !important;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.15rem 0.6rem;
+        border-radius: 0.875rem;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-badge::before {
+        content: '';
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .status-pending { 
+        background: #fffbeb;
+        color: #d97706;
+    }
+    .status-pending::before {
+        background: #f59e0b;
+    }
+
+    .status-approved {
+        background: #ecfdf5;
+        color: #059669;
+    }
+    .status-approved::before {
+        background: #10b981;
+    }
+
+    .status-rejected {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+    .status-rejected::before {
+        background: #ef4444;
+    }
+
+    /* Header Layout */
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255,255,255,0.8);
+        display: none;
+        z-index: 100;
+        border-radius: 0.5rem;
+    }
+</style>
+
+<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
+    <div class="loading-overlay">
+        <div class="loading-spinner">
+            <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-container">
+        <div class="filter-buttons">
+            <button class="px-3 py-1.5 text-sm rounded-md bg-blue-100 text-blue-800 hover:bg-blue-200 status-filter" data-status="all">
+                All ({{ total_count }})
+            </button>
+            <button class="px-3 py-1.5 text-sm rounded-md bg-yellow-100 text-yellow-800 hover:bg-yellow-200 status-filter" data-status="pending">
+                Pending ({{ pending_count }})
+            </button>
+            <button class="px-3 py-1.5 text-sm rounded-md bg-green-100 text-green-800 hover:bg-green-200 status-filter" data-status="accepted">
+                Approved ({{ approved_count }})
+            </button>
+            <button class="px-3 py-1.5 text-sm rounded-md bg-red-100 text-red-800 hover:bg-red-200 status-filter" data-status="rejected">
+                Rejected ({{ rejected_count }})
+            </button>
+        </div>
+
+        <!-- Create Button -->
+        <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                onclick="window.location.href='{% url 'create_post' %}'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Create New
+        </button>
+    </div>
+
+    <!-- Table -->
+    <table id="blogTable" class="w-full">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for blog in blog %}
+            <tr>
+                <td class="font-medium text-gray-900">{{ blog.title|truncatechars:35 }}</td>
+                <td>{{ blog.author.get_full_name|truncatechars:15 }}</td>
+                <td>{{ blog.category.name|truncatechars:15 }}</td>
+                <td>{{ blog.created_at|date:"M d" }}</td>
+                <td>
+                    <span class="status-badge status-{{ blog.status|lower }}">
+                        {{ blog.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'blog_detail_while_editing' blog.id %}" class="text-blue-600 hover:text-blue-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </a>
+                        <a href="{% url 'admin_edit_blog' blog.id %}" class="text-green-600 hover:text-green-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    const table = $('#blogTable').DataTable({
+        processing: true,
+        serverSide: false,
+        pageLength: 7,
+        lengthMenu: [[7,5,3], [7,5,3]],
+        paging: true,
+        responsive: true,
+        dom: '<"flex justify-between items-center mb-3"lf>rt<"flex justify-between items-center mt-3"ip>',
+        language: {
+            paginate: {
+                next: 'Next →',
+                previous: '← Prev'
+            },
+            search: "_INPUT_",
+            searchPlaceholder: "Search blogs...",
+            info: "Showing _START_ to _END_ of _TOTAL_",
+            lengthMenu: "Show _MENU_",
+            infoEmpty: "No entries found",
+            zeroRecords: "No matching blogs found",
+        },
+        columnDefs: [
+            { targets: 0, width: '30%' },
+            { targets: 1, width: '15%' },
+            { targets: 2, width: '15%' },
+            { targets: 3, width: '12%' },
+            { targets: 4, width: '13%' },
+            { targets: 5, width: '15%', orderable: false }
+        ],
+        initComplete: function() {
+            $('.loading-overlay').hide();
+        }
+    });
+
+    // Status filtering
+    $('.status-filter').on('click', function() {
+        const status = $(this).data('status');
+        table.column(4).search(status === 'all' ? '' : status).draw();
+        $('.status-filter').removeClass('bg-opacity-100');
+        $(this).addClass('bg-opacity-100');
+    });
+
+    // Loading overlay
+    table.on('processing.dt', function(e, settings, processing) {
+        $('.loading-overlay').toggle(processing);
+    });
+});
+</script>
+
+{% endblock content %}

@@ -1,0 +1,184 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg bg-white px-3">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="{% static 'image/let_us_dream_logo.png' %}" alt="Logo" width="50" height="30" class="me-2">
+        <div class="d-flex flex-column">
+            <span class="fw-dark fs-5">Let Us Dream</span>
+            <span class="fs-6 text-secondary">Blogs</span>
+        </div>
+    </a>
+    
+    <!-- Back Button -->
+    
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+            {% if not user.is_authenticated and request.resolver_match.url_name == 'blog-home' %}
+                <li class="nav-item">
+                    <a class="nav-link home-link" href="{% url 'blog-home' %}">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                </li>
+            {% endif %}
+        
+            {% if user.is_authenticated and not user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link profile-link" href="{% url 'user_blog_update' %}">
+                        <i class="bi bi-person-circle"></i> Profile
+                    </a>
+                </li>
+            {% endif %}
+            {% if user.is_authenticated and user.is_superuser  %}
+            <li class="nav-item">
+                <a class="nav-link profile-link" href="{% url 'blog_detail_published' %}">
+                    <i class="bi bi-person-circle"></i> Profile
+                </a>
+            </li>
+        {% endif %}
+        
+            {% if not user.is_authenticated and request.resolver_match.url_name == 'blog-home' %}
+                <li class="nav-item">
+                    <a class="nav-link signin-link" href="{% url 'request_otp' %}">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In
+                    </a>
+                </li>
+            {% endif %}
+        
+            {% if request.resolver_match.url_name in 'request_otp verify_otp' or not user.is_authenticated and not request.resolver_match.url_name in 'blog-home' %}
+                <li class="nav-item">
+                    <i class="bi bi-arrow-left back-icon" onclick="handleBack()" title="Go Back"></i>
+                </li>
+            {% endif %}
+          
+        </ul>
+        
+        <style>
+            .navbar-nav .nav-link {
+                font-size: 16px;
+                padding: 8px 15px;
+                transition: all 0.3s ease-in-out;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+        
+            .navbar-nav .nav-link i {
+                font-size: 18px;
+            }
+        
+            .navbar-nav .nav-link:hover {
+                color: #007bff !important;
+                transform: translateY(-2px);
+            }
+        
+            .back-icon {
+                font-size: 24px;
+                color: #333;
+                cursor: pointer;
+                transition: color 0.3s ease, transform 0.3s ease;
+                padding: 5px;
+            }
+        
+            .back-icon:hover {
+                color: #007bff;
+                transform: translateX(-3px);
+            }
+        </style>
+        
+        {% if request.resolver_match.url_name in 'blog-home' %}
+        <!-- Search Bar -->
+        {% comment %} <form class="d-flex" method="GET" action="{% url 'blog-home' %}">
+            <!-- Search Input -->
+            <input class="form-control me-2" type="search" name="search" placeholder="Search Blogs..." value="{{ search_query }}">
+            
+            <!-- Category Filter Dropdown -->
+            <select class="form-select me-2" name="category">
+                <option value="all" {% if selected_category == "all" %}selected{% endif %}>All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        
+            <!-- Submit Button -->
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </form> {% endcomment %}
+        
+        
+    {% comment %} <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+        {% for category in categories %}
+            <li>
+                <a class="dropdown-item category-link" href="">
+                    {{ category.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div> {% endcomment %}
+
+<!-- Add Styles for Better UI -->
+<style>
+    .custom-dropdown {
+        border-radius: 10px;
+        box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.1);
+        border: none;
+        min-width: 180px;
+        padding: 8px 0;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Show dropdown smoothly */
+    .dropdown.show .custom-dropdown {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Dropdown item */
+    .category-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        font-size: 16px;
+        color: #333;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .category-link:hover {
+        background-color:rgb(11, 129, 137);
+        color: white !important;
+        padding-left: 20px; /* Smooth slide effect */
+    }
+</style>
+
+        {% endif %}
+    </div>
+</nav>
+
+<script>
+    
+        function handleBack() {
+            let currentPage = "{{ request.resolver_match.url_name }}";  // Get the current page name
+    
+            if (currentPage === "request_otp" || currentPage === "verify_otp" ) {
+              
+                
+                    window.location.href = "{% url 'blog-home' %}";  // Redirect non-logged-in users to home
+             
+            }
+            else{
+            window.location.href = "{% url 'blog-home' %}"; }
+        }
+        
+   
+    
+</script>

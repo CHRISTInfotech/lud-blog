@@ -1,0 +1,102 @@
+{% extends 'partials/home_base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.get_full_name }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% comment %} <div class="row">
+        <div class="col-md-12">
+            <!-- Back Button -->
+            <a href="javascript:history.back()" class="btn btn-outline-secondary mb-4">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div> {% endcomment %}
+    
+    <div class="row">
+        <!-- Profile Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <img src="{% if profile_user.userprofile.profile_picture %}{{ profile_user.userprofile.profile_picture.url }}{% else %}{% static 'default_profile.png' %}{% endif %}" 
+                         class="rounded-circle mb-3" 
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                    
+                    <h2 class="mb-1">{{ profile_user.get_full_name }}</h2>
+                    <p class="text-muted">{{ user_profile.affiliation }}</p>
+                    <p class="text-muted">{{ profile_user.email }}</p>
+                    
+                    {% if profile_user.userprofile.bio %}
+                    <div class="card mt-3">
+                        <div class="card-body text-start">
+                            <h5 class="card-title">About</h5>
+                            <p class="card-text">{{ user_profile.id.email }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- User's Blogs -->
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ profile_user.first_name }}'s Articles</h4>
+                </div>
+                
+                <div class="card-body">
+                    {% if user_blogs %}
+                        <div class="list-group">
+                            {% for blog in user_blogs %}
+                            <a href="{% url 'blog_detail' blog.id %}" 
+                               class="list-group-item list-group-item-action border-0 shadow-sm mb-3 rounded">
+                                <div class="row g-0">
+                                    {% if blog.image %}
+                                    <div class="col-md-4">
+                                        <img src="{{ blog.image.url }}" 
+                                             class="img-fluid rounded-start" 
+                                             style="height: 150px; object-fit: cover;">
+                                    </div>
+                                    {% endif %}
+                                    <div class="col-md-{% if blog.image %}8{% else %}12{% endif %}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ blog.title }}</h5>
+                                            <p class="card-text text-muted small">
+                                                <i class="bi bi-calendar"></i> {{ blog.created_at|date:"M d, Y" }}
+                                                <span class="mx-2">•</span>
+                                                <i class="bi bi-clock"></i> {{ blog.read_time }} min read
+                                            </p>
+                                            <p class="card-text">{{ blog.content|striptags|truncatechars:150 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-newspaper display-4 text-muted"></i>
+                            <p class="mt-3 text-muted">No articles found</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .list-group-item:hover {
+        transform: translateX(5px);
+        transition: transform 0.2s ease-in-out;
+    }
+    .rounded-start {
+        border-top-left-radius: 0.375rem !important;
+        border-bottom-left-radius: 0.375rem !important;
+    }
+</style>
+{% endblock %}
