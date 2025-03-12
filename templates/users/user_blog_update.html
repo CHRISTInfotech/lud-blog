@@ -1,15 +1,20 @@
-
 {% extends base_template %}
 {% comment %} 
 {% block title %}Your Blogs{% endblock %} {% endcomment %}
 
 {% block content %}
 <style>
+    /* Main container for the table */
+    .table-container {
+     
+        padding: 1rem;
+   
+    }
+
     /* Consistent table styling */
     #blogsTable {
         border-collapse: separate;
         border-spacing: 0 0.5rem;
-        margin: 0.5rem 0;
         width: 100%;
         font-size: 0.875rem;
     }
@@ -59,11 +64,20 @@
         background: #fef2f2;
         color: #dc2626;
     }
+    .main{
+        margin-left:250px;
+        margin-top:70px;
+    }
+    @media screen and (max-width: 1024px) {
+        .main {
+            margin-left: 0px; /* No left margin on mobile */
+        }
+    }
 </style>
 
-<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
-    {% comment %} <h1 class="text-xl font-semibold text-gray-900 mb-4">Your Blogs</h1> {% endcomment %}
-
+<!-- Table Container -->
+<div class="main table-container">
+    {% comment %} {% if blog and blog|length > 0 %} {% endcomment %}
     <!-- Blogs Table -->
     <table id="blogsTable" class="w-full">
         <thead>
@@ -74,8 +88,10 @@
                 <th>Actions</th>
             </tr>
         </thead>
+        
         <tbody>
             {% for blog in blogs %}
+            {% comment %} {% if blog and blog|length > 0 %} {% endcomment %}
             <tr>
                 <td class="font-medium text-gray-900">{{ blog.title|truncatechars:40 }}</td>
                 <td>{{ blog.created_at|date:"M d, Y" }}</td>
@@ -103,13 +119,15 @@
                     </div>
                 </td>
             </tr>
+           
             {% empty %}
-            <tr>
-                <td colspan="4" class="text-center text-gray-500 py-4">No blogs found.</td>
-            </tr>
-            {% endfor %}
+          <tr>
+             <td colspan="4" class="text-center text-gray-500 py-4">No blogs yet.</td>
+            </tr> 
+            {% endfor %} 
         </tbody>
     </table>
+  
 </div>
 
 <!-- DataTables JS -->
@@ -118,6 +136,7 @@
 
 <script>
 $(document).ready(function() {
+    {% if blog and blog|length > 0 %}
     const table = $('#blogsTable').DataTable({
         processing: true,
         serverSide: false,
@@ -147,6 +166,7 @@ $(document).ready(function() {
         autoWidth: false,
         order: [[1, 'desc']]
     });
+    {% endif %}
 });
 </script>
 

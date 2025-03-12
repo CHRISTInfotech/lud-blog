@@ -3,19 +3,91 @@
 {% block title %}Invite Users{% endblock %}
 
 {% block content %}
-<div class="main p-1 rounded  mx-auto max-w-full md:max-w-3xl mt-6 bg-white">
-    
+<style>
+    /* Main container styling */
+    .main{
+        margin-left:220px;
+        margin-top:60px;
+    }
+    @media screen and (max-width: 1024px) {
+        .main {
+            margin-left: 0px; /* No left margin on mobile */
+        }
+    }
+
+    /* Form container */
+    .form-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top:70px;
+    }
+
+    /* Toggle buttons */
+    .toggle-btn {
+        width: 50%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .toggle-btn {
+            padding: 0.5rem 1.5rem;
+            font-size: 1.125rem;
+        }
+    }
+
+    /* Form elements */
+    .form-input {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    @media (min-width: 768px) {
+        .form-input {
+            font-size: 1.125rem;
+            padding: 1rem;
+        }
+    }
+
+    /* File input */
+    .file-input {
+        padding: 0.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .file-input {
+            padding: 0.75rem;
+        }
+    }
+
+    /* Submit button */
+    .submit-btn {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .submit-btn {
+            padding: 1rem;
+            font-size: 1.125rem;
+        }
+    }
+</style>
+
+<div class="main p-4 rounded mx-auto form-container bg-white shadow-md">
     <!-- Toggle Between Single and Bulk Invite -->
     <div class="flex justify-center mb-6">
-        <button type="button" id="single-invite-btn" class="toggle-btn bg-blue-500 text-white px-6 py-2 rounded-l-lg focus:outline-none transition transform hover:scale-105">
+        <button type="button" id="single-invite-btn" class="toggle-btn bg-blue-500 text-white rounded-l-lg focus:outline-none transition transform hover:scale-105">
             Single Invite
         </button>
-        <button type="button" id="bulk-invite-btn" class="toggle-btn bg-gray-300 text-black px-6 py-2 rounded-r-lg focus:outline-none transition transform hover:scale-105">
+        <button type="button" id="bulk-invite-btn" class="toggle-btn bg-gray-300 text-black rounded-r-lg focus:outline-none transition transform hover:scale-105">
             Bulk Invite
         </button>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+    <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg">
         {% csrf_token %}
 
         <!-- Success/Error Messages -->
@@ -36,7 +108,7 @@
                 <label for="name" class="block text-lg font-semibold mb-2">Name</label>
                 <div class="flex items-center border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-blue-500 transition">
                     <span class="text-gray-500 text-lg">👤</span>
-                    <input type="text" id="name" name="name" class="w-full ml-3 outline-none bg-transparent text-lg" placeholder="Enter Name">
+                    <input type="text" id="name" name="name" class="w-full ml-3 outline-none bg-transparent form-input" placeholder="Enter Name">
                 </div>
             </div>
 
@@ -44,7 +116,7 @@
                 <label for="email" class="block text-lg font-semibold mb-2">Email</label>
                 <div class="flex items-center border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-blue-500 transition">
                     <span class="text-gray-500 text-lg">📩</span>
-                    <input type="email" id="email" name="email" placeholder="Enter Email" required class="w-full ml-3 outline-none bg-transparent text-lg">
+                    <input type="email" id="email" name="email" placeholder="Enter Email" required class="w-full ml-3 outline-none bg-transparent form-input">
                 </div>
             </div>
         </div>
@@ -53,20 +125,24 @@
         <div id="bulk-invite-section" class="hidden">
             <div class="mb-4">
                 <label for="csv_file" class="block text-lg font-semibold mb-2">Upload CSV File (Name, Email)</label>
-                <input type="file" id="csv_file" name="csv_file" accept=".csv" class="w-full p-3 border border-gray-300 rounded-lg bg-white shadow-md text-lg">
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" class="w-full border border-gray-300 rounded-lg bg-white shadow-md file-input">
+            </div>
+            <!-- Download CSV Template Button -->
+            <div class="mb-4">
+                <a href="{% url 'download_csv_template' %}" class="block text-center bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+                    📥 Download CSV Template
+                </a>
             </div>
         </div>
 
+        <!-- Rich Text Editor -->
         <div class="mb-4">
-            <label for="message" class="block text-lg font-semibold mb-2">Default Message</label>
-            <div class="flex items-start border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-blue-500 transition">
-                <span class="text-gray-500 text-lg">📩</span>
-                <textarea id="message" name="message" class="w-full ml-3 outline-none bg-transparent resize-none text-lg" rows="2">You are invited to join our blog platform. Click the link below to register.</textarea>
-            </div>
+            <label for="richTextEditor" class="block text-lg font-semibold mb-2">Content</label>
+            <textarea id="richTextEditor" name="content" value="you are invited to the letus dream blogs"></textarea>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="mt-4 w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition transform hover:scale-105 shadow-md text-lg">
+        <button type="submit" class="mt-4 bg-green-500 text-white rounded-lg hover:bg-green-700 transition transform hover:scale-105 shadow-md submit-btn">
             🔗 Send Invite
         </button>
     </form>
@@ -104,6 +180,17 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
+{% comment %} <!-- Initialize TinyMCE -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+    selector: '#richTextEditor',
+    menubar: false,
+    plugins: 'link lists',
+    toolbar: 'undo redo | bold italic underline | bullist numlist | link',
+});
+</script> {% endcomment %}
 
 <!-- Auto Remove Messages After 5 Sec -->
 <script>

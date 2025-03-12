@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from ckeditor.fields import RichTextField
-
+import uuid
 
 
 class UserProfile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=True, null=True)
     affiliation = models.CharField(max_length=255, blank=True, null=True)
@@ -21,6 +22,7 @@ from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
 class Category(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     def __str__(self):
@@ -39,6 +41,7 @@ class Blog(models.Model):
         ("Approved", "Approved"),
         ("Rejected", "Rejected"),
     ]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)  # ForeignKey to Category
     image = models.ImageField(upload_to='blog_images/', blank=True, null=True)

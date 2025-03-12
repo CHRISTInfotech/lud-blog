@@ -1,111 +1,140 @@
 {% load static %}
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #D3D3D3;
-    }
+<!-- Sidebar Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[999] hidden lg:hidden"></div>
 
-    #sidebar {
-        background-color: #ffffff;
-        transition: width 0.3s, transform 0.3s;
-        overflow: hidden;
-    }
-
-    #sidebar.collapsed {
-        width: 4rem;
-    }
-
-    #sidebar.collapsed .sidebar-text {
-        display: none;
-    }
-
-    #sidebar.collapsed .sidebar-icon {
-        text-align: center;
-    }
-
-    #main-content {
-        transition: margin-left 0.3s;
-        margin-left: 0rem;
-    }
-
-    #sidebar.collapsed + #main-content {
-        margin-left: 0rem;
-    }
-
-</style>
-
-<div id="sidebar" class="shadow-lg h-screen w-64 transition-width duration-300 bg-indigo-800 flex flex-col justify-between">
-    <div>
-        <!-- Profile Section -->
-        <div class="p-4 text-center">
-            <img src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}https://via.placeholder.com/100{% endif %}" alt="Profile Picture" class="w-20 h-20 mx-auto rounded-full object-cover shadow-lg border-2 border-white">
-            <h2 class="text-lg font-bold text-dark mt-2">{{ user_profile.name|default:"Name" }}</h2>
-            <p class="text-dark-300 text-sm">{{ user.email }}</p>
-            <p class="text-dark-400 text-xs">{{ user_profile.affiliation|default:"affiliation" }}</p>
-        </div>
-
-        <!-- Navigation Links -->
-        <nav class="p-4 space-y-2">
-             <a href="{% url 'blog-home' %}" class="block py-2 px-4 flex items-center hover:bg-blue-700 hover:text-white rounded">
-                <span class="sidebar-icon text-white">📖</span>
-                <span class="sidebar-text ml-2 text-dark">View Blog</span>
-            </a>
-
-           <a href="{% url 'admin_manage_categories' %}" class="block py-2 px-4 flex items-center hover:bg-rose-700 hover:text-white rounded">
-                <span class="sidebar-icon text-white">➕</span>
-                <span class="sidebar-text ml-2 text-dark">Add Catogary</span>
-            </a>
-
-         <a href="{% url 'user_blog_update' %}" class="block py-2 px-4 flex items-center hover:bg-orange-700 hover:text-white rounded">
-                <span class="sidebar-icon text-white">👁️</span>
-                <span class="sidebar-text ml-2 text-dark">View My Blog</span>
-            </a>  
-
-           <a href="{% url 'admin_chart' %}" class="block py-2 px-4 flex items-center hover:bg-yellow-600 hover:text-white rounded">
-                <span class="sidebar-icon text-white">📊</span>
-                <span class="sidebar-text ml-2 text-dark">Dashboard</span>
-            </a> 
-
-            <a href="{% url 'blog_detail_published' %}" class="block py-2 px-4 flex items-center hover:bg-green-600 hover:text-white rounded">
-                <span class="sidebar-icon text-white">📝</span>
-                <span class="sidebar-text ml-2 text-dark">Manage Blogs</span>
-            </a>
-
-            {% comment %} <a href="{% url 'blog-home' %}" class="block py-2 px-4 flex items-center hover:bg-blue-500 hover:text-white rounded">
-                <span class="sidebar-icon text-white">🔄</span>
-                <span class="sidebar-text ml-2 text-dark">Update Invited Blogs</span>
-            </a>
-
-            <a href="{% url 'blog-home' %}" class="block py-2 px-4 flex items-center hover:bg-green-500 hover:text-white rounded">
-                <span class="sidebar-icon text-white">👍</span>
-                <span class="sidebar-text ml-2 text-dark">Approve Blogs</span>
-            </a> {% endcomment %}
-            <a href="{% url 'view_invited_user' %}" class="block py-2 px-4 flex items-center hover:bg-blue-500 hover:text-white rounded">
-                <span class="sidebar-icon text-white">🙋‍♂️</span>
-                <span class="sidebar-text ml-2 text-dark">Invited Users</span>
-            </a>
-
-            <a href="{% url 'invite_user' %}" class="block py-2 px-4 flex items-center hover:bg-purple-600 hover:text-white rounded">
-                <span class="sidebar-icon text-white">📨</span>
-                <span class="sidebar-text ml-2 text-dark">Invite Users</span>
-            </a>
-
-            <a href="{% url 'manage_user' %}" class="block py-2 px-4 flex items-center hover:bg-red-600 hover:text-white rounded">
-                <span class="sidebar-icon text-white">👥</span>
-                <span class="sidebar-text ml-2 text-dark">Manage Users</span>
-            </a>
-
-            <a href="{% url 'edit_profile_admin' %}" class="block py-2 px-4 flex items-center hover:bg-blue-600 hover:text-white rounded">
-                <span class="sidebar-icon text-white">✏️</span>
-                <span class="sidebar-text ml-2 text-dark">Edit Profile</span>
-            </a>
-
-            <a href="{% url 'logout' %}" class="block py-2 px-4 flex items-center hover:bg-red-700 hover:text-white rounded">
-                <span class="sidebar-icon text-white">🚪</span>
-                <span class="sidebar-text ml-2 text-dark">Log Out</span>
-            </a>
-        </nav>
+<!-- Sidebar -->
+<div id="sidebar" class="shadow-lg w-64 bg-white fixed top-0 left-0 z-[1000] transform -translate-x-full lg:translate-x-0 lg:top-16 lg:h-[calc(100vh-4rem)] h-full transition-transform duration-300 flex flex-col overflow-hidden">
+    <!-- Close Button for Mobile -->
+    <button id="close-sidebar" class="lg:hidden absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-800 z-10">
+        ✖
+    </button>
+    
+    <!-- Profile Section -->
+    <div class="p-4 text-center border-b flex-shrink-0">
+        <img src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}https://via.placeholder.com/100{% endif %}" 
+             alt="Profile Picture" class="w-20 h-20 mx-auto rounded-full object-cover shadow-lg border-2 border-gray-200">
+        <h2 class="text-lg font-bold text-gray-800 mt-2">{{ user_profile.name|default:"Name" }}</h2>
+        <p class="text-gray-600 text-sm">{{ user.email }}</p>
+        <p class="text-gray-500 text-xs">{{ user_profile.affiliation|default:"affiliation" }}</p>
     </div>
+
+    <!-- Scrollable Navigation -->
+    <nav class="flex-1 overflow-y-auto p-4 space-y-2 pb-20">
+        <a href="{% url 'blog-home' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-blue-100 rounded">
+            📖 <span class="ml-2">View Blog</span>
+        </a>
+        <a href="{% url 'admin_manage_categories' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-rose-100 rounded">
+            ➕ <span class="ml-2">Add Category</span>
+        </a>
+        <a href="{% url 'user_blog_update' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-orange-100 rounded">
+            👁️ <span class="ml-2">View My Blog</span>
+        </a>  
+        <a href="{% url 'admin_chart' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-yellow-100 rounded">
+            📊 <span class="ml-2">Dashboard</span>
+        </a> 
+        <a href="{% url 'blog_detail_published' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-green-100 rounded">
+            📝 <span class="ml-2">Manage Blogs</span>
+        </a>
+        <a href="{% url 'view_invited_user' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-blue-100 rounded">
+            🙋‍♂️ <span class="ml-2">Invited Users</span>
+        </a>
+        <a href="{% url 'invite_user' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-purple-100 rounded">
+            📨 <span class="ml-2">Invite Users</span>
+        </a>
+        <a href="{% url 'manage_user' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-red-100 rounded">
+            👥 <span class="ml-2">Manage Users</span>
+        </a>
+        <a href="{% url 'edit_profile_admin' %}" class="block py-2 px-4 flex items-center text-gray-700 hover:bg-blue-100 rounded">
+            ✏️ <span class="ml-2">Edit Profile</span>
+        </a>
+    </nav>
+
+    <!-- Sticky Logout Button -->
+    <div class="sticky bottom-0 bg-white border-t pt-2 flex-shrink-0 w-full">
+        <a href="{% url 'logout' %}" class="block py-3 px-5 flex items-center text-gray-700 hover:bg-red-100 hover:text-red-700 rounded">
+            🚪 <span class="ml-2">Log Out</span>
+        </a>
+    </div> 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const toggleButton = document.querySelector('[data-drawer-toggle]');
+        const closeButton = document.getElementById('close-sidebar');
+        
+        // Make sure the sidebar is closed on page load for mobile
+        if (window.innerWidth < 1024) {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('overflow-hidden');
+            }
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    
+        // Toggle button click handler
+        if (toggleButton) {
+            toggleButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    openSidebar();
+                } else {
+                    closeSidebar();
+                }
+            });
+        }
+    
+        // Close button click handler
+        if (closeButton) {
+            closeButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeSidebar();
+            });
+        }
+    
+        // Overlay click handler
+        if (overlay) {
+            overlay.addEventListener('click', function(e) {
+                closeSidebar();
+            });
+        }
+    
+        // Close sidebar on ESC press
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !sidebar.classList.contains('-translate-x-full')) {
+                closeSidebar();
+            }
+        });
+    
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            } else {
+                // On mobile, keep sidebar closed when resizing
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    overlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }
+            }
+        });
+    });
+</script>

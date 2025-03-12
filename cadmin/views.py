@@ -21,89 +21,6 @@ from django.db import models
 
 # Create your views here.
 
-def blog_requests(request):
-    full = Category.objects.all()
-    blog = blog_request.objects.all().order_by('-status')
-    paginator = Paginator(blog, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number) 
-    if request.method == 'POST':
-        category_name = request.POST.get('name')
-        if category_name:
-            Category.objects.create(name=category_name)
-            return redirect('blog_requests')  # Reload page to see the changes
-        else:
-            return render(request, 'admin/base.html', {
-                'error_message': 'Category name cannot be empty.',
-            })
-    # Get the current page number from the request GET parameters
-    
-    return render(request,'admin/admin_home.html',{'page_obj':page_obj,'all':full})
-
-
-def post_request(request):
-    filter_option = request.GET.get('filter', 'all')  # Default to 'all'
-
-    if filter_option == 'accepted':
-        posts = Blog.objects.filter(is_approved=True)
-    elif filter_option == 'pending':
-        posts = Blog.objects.filter(is_approved=False)
-    else:
-        posts = Blog.objects.all()
-    paginator = Paginator(posts, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number) 
-    return render(request,'admin/post_request.html',{'page_obj':page_obj,'filter_option': filter_option})
-
-def approve_post(request, post_id):
-    post = get_object_or_404(Blog, id=post_id)
-    post.is_approved = True
-    post.save()
-    return redirect('post_request')
-
-def delete_category(request, id):
-    category = Category.objects.get(id=id)
-    category.delete()
-    return redirect("blog_requests")
-
-
-
-def accept_request(request, id):
-    blog = get_object_or_404(blog_request, id=id)
-
-    if blog.status:  # If the request is pending
-        blog.status = False  # Mark as accepted
-        blog.save()
-
-        # Generate the registration link with uid and token
-        uid = urlsafe_base64_encode(force_bytes(blog.id))
-        registration_link = request.build_absolute_uri(
-        reverse('users-sign-up', kwargs={'uid': uid})
-        )
-
-        # Send an email to the user
-        try:
-            send_mail(
-                subject='Account Activation Request Accepted',
-                message=(
-                    f'Dear {blog.name},\n\n'
-                    f'Your account activation request has been accepted. '
-                    f'Please complete your registration using the link below:\n\n{registration_link}\n\n'
-                    f'Thank you.'
-                ),
-                from_email='pesaccout2002@gmail.com',  # Replace with your valid email
-                recipient_list=[blog.mail],
-                fail_silently=False,
-            )
-        except Exception as e:
-            print(f"Email sending failed: {e}")
-    else:
-        blog.status = True  # Toggle back to pending (if necessary)
-        blog.save()
-
-    return redirect('blog_requests')
-
-
 
 
 
@@ -135,7 +52,7 @@ def edit_profile_admin(request):
 #     return render(request,'admin/invite_user.html')
 
 
-
+@login_required
 @csrf_exempt  # Remove this if you are using CSRF tokens in frontend
 def toggle_user_status(request, user_id):
     if request.method == "POST":
@@ -154,14 +71,14 @@ def toggle_user_status(request, user_id):
 
 
 
-
+@login_required
 def manage_user(request):
     users = UserProfile.objects.filter(user__is_superuser=False).all()
     return render(request, 'admin/manage_user.html', {'users': users})
     
     
 
-
+@login_required
 def blog_detail_published(request):
     # Get the blog ID from the request
 
@@ -184,7 +101,17 @@ def blog_detail_published(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib.auth.decorators import login_required
+from .models import Invitation
+import csv
+from io import TextIOWrapper
 
+@login_required
 def invite_user(request):
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
@@ -192,10 +119,10 @@ def invite_user(request):
         message = request.POST.get("message", "You are invited to join our blog platform.")
         csv_file = request.FILES.get("csv_file")
 
-        email_list = []  # Store emails
-        invited_users = []  # Store user data
+        email_list = []
+        invited_users = []
 
-        is_bulk_invite = bool(csv_file)  # Check if this is a bulk invite
+        is_bulk_invite = bool(csv_file)
 
         if is_bulk_invite:
             try:
@@ -210,36 +137,40 @@ def invite_user(request):
                 messages.error(request, f"Error processing file: {e}")
                 return redirect("invite_user")
 
-        # Handle single invite
         if email:
             email_list.append({"name": name, "email": email})
 
-        # Process invitations
         new_invites = []
         already_invited = set()
 
         for user in email_list:
             if Invitation.objects.filter(email=user["email"]).exists():
-                already_invited.add(user["email"])  # Avoid duplicate messages
+                already_invited.add(user["email"])
             else:
+                invite_link = f"https://yourdomain.com/register?email={user['email']}"  # Modify based on your actual registration link
                 new_invites.append(user)
                 invited_users.append(Invitation(name=user["name"], email=user["email"], message=message))
 
-        # Bulk insert new invites
+                # **Send HTML Email**
+                context = {
+                    "name": user["name"],
+                    "message": message,
+                    "invite_link": invite_link,
+                }
+
+                subject = "You're Invited to Join Our Blog!"
+                html_message = render_to_string("emails/invite_email.html", context)
+                plain_message = strip_tags(html_message)  # Convert HTML to plain text
+                from_email = "noreply@yourdomain.com"
+                recipient_list = [user["email"]]
+
+                email_obj = EmailMultiAlternatives(subject, plain_message, from_email, recipient_list)
+                email_obj.attach_alternative(html_message, "text/html")
+                email_obj.send()
+
         if invited_users:
             Invitation.objects.bulk_create(invited_users)
 
-        # Send emails to new users
-        for user in new_invites:
-            send_mail(
-                "You're Invited!",
-                message,
-                "noreply@yourdomain.com",
-                [user["email"]],
-                fail_silently=False,
-            )
-
-        # **Display messages for single and bulk invite separately**
         if is_bulk_invite:
             messages.success(request, "Bulk invitations sent successfully.")
         else:
@@ -248,9 +179,10 @@ def invite_user(request):
             elif new_invites:
                 messages.success(request, "Invitation sent successfully.")
 
-        return redirect("invite_user")
+        return redirect("view_invited_user")
 
     return render(request, "admin/invite_user.html")
+
 
 
 
@@ -269,6 +201,17 @@ def view_invited_user(request):
 
     return render(request, 'admin/view_invited_user.html', {'invitations': invitations})
 
+from django.http import HttpResponse
+@login_required
+def download_csv_template(request):
+    # Define CSV content
+    csv_content = "nJohn Doe,johndoe@example.com\nJane Smith,janesmith@example.com\n"
+
+    # Create HTTP response with CSV content
+    response = HttpResponse(csv_content, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="invite_template.csv"'
+    
+    return response
 
 @login_required
 def admin_edit_blog(request, blog_id):
@@ -300,7 +243,7 @@ def admin_edit_blog(request, blog_id):
 
 
 
-
+@login_required
 def manage_categories(request):
     categories = Category.objects.all()
 
@@ -325,7 +268,7 @@ def manage_categories(request):
 
 
 
-
+@login_required
 def disable_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     
@@ -336,6 +279,7 @@ def disable_category(request, category_id):
     messages.success(request, f"Category '{category.name}' has been disabled successfully!")
     return redirect('admin_manage_categories')
 
+@login_required
 def enable_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     
@@ -346,6 +290,7 @@ def enable_category(request, category_id):
     messages.success(request, f"Category '{category.name}' has been enabled successfully!")
     return redirect('admin_manage_categories')
 
+@login_required
 def admin_chart(request):
     # Count blogs based on their status
     blog_status_data = Blog.objects.values("status").annotate(count=Count("id"))
