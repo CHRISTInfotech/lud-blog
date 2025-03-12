@@ -27,8 +27,10 @@ SECRET_KEY = 'django-insecure-lyexy76u1m-s_*l-+l9wt#v-0ljr5!q-y$evys877d6ti3&u16
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','yourdomain.com']
-
+if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1','localhost','yourdomain.com']
+else:
+    ALLOWED_HOSTS = ['10.5.5.31','blogs.letusdream.org']
 
 # Application definition
 
@@ -146,13 +148,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 STATIC_URL = '/static/'
 
-# For production, collectstatic will place files in this directory
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# During development, this will let Django serve static files from the app directories
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+else:
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
