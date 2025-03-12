@@ -27,8 +27,10 @@ SECRET_KEY = 'django-insecure-lyexy76u1m-s_*l-+l9wt#v-0ljr5!q-y$evys877d6ti3&u16
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1','localhost','yourdomain.com']
+else:
+    ALLOWED_HOSTS = ['10.5.5.31','blogs.letusdream.org']
 
 # Application definition
 
@@ -44,6 +46,9 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'crispy_forms',
     'crispy_bootstrap4',
+    'ckeditor',
+    'ckeditor_uploader',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -130,22 +135,25 @@ LOGIN_REDIRECT_URL = 'blog-index'
 
 LOGIN_URL = 'users-login'
 
+ALLOW_MEDIA = True 
 
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+# MEDIA_URL = '/media/'
 
-MEDIA_ROOT = (BASE_DIR /'media')
+# MEDIA_ROOT = (BASE_DIR /'media')
+# MEDIA_ROOT = r"C:\Users\jaise\lud-blog\media"
 
 
 STATIC_URL = '/static/'
 
-# For production, collectstatic will place files in this directory
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# During development, this will let Django serve static files from the app directories
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+else:
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'

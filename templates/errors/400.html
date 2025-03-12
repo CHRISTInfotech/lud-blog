@@ -1,0 +1,10 @@
+{% extends "partials/home_base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/errors.css">
+<div class="error-container">
+    <h1>404</h1>
+    <p>Oops! The page you're looking for doesn't exist.</p>
+    <a href="{% url 'blog-home' %}" class="btn-home">Go Home</a>
+</div>
+{% endblock %}

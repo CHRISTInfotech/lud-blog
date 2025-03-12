@@ -1,0 +1,10 @@
+{% extends "partials/home_base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/errors.css">
+<div class="error-container">
+    <h1>503</h1>
+    <p>We're currently down for maintenance. Please check back soon.</p>
+    <a href="{% url 'blog-home' %}" class="btn-home">Try Again</a>
+</div>
+{% endblock %}

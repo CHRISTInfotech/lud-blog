@@ -60,9 +60,18 @@
         opacity: 0.6;
         cursor: not-allowed;
     }
+    .main{
+        margin-left:250px;
+        margin-top:60px;
+    }
+    @media screen and (max-width: 1024px) {
+        .main {
+            margin-left: 0px; /* No left margin on mobile */
+        }
+    }
 </style>
 
-<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
+<div class="main p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
     <!-- Header Section -->
     <div class="header-container mb-4">
         <h1 class="text-xl font-semibold text-gray-900">User Management</h1>
@@ -117,6 +126,7 @@ $(document).ready(function() {
         pageLength: 7,
         lengthMenu: [[7,6,5], [7,6,5]],
         paging: true,
+        scrollX: true,
         responsive: true,
         dom: '<"flex justify-between items-center mb-3"lf>rt<"flex justify-between items-center mt-3"ip>',
         language: {

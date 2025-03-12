@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from users.models import Blog, Category
 
+
 def home(request):
     search_query = request.GET.get('search', '').strip()  # Get search term
     category_filter = request.GET.get('category', '').strip()  # Get selected category
@@ -37,3 +38,24 @@ def home(request):
     }
     
     return render(request, 'blog/home.html', context)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from users.models import Blog
+from .serializers import BlogPostSerializer
+
+class RecentBlogsAPI(APIView):
+    def get(self, request):
+        category = request.GET.get("category", None)  # Get category from query params
+        
+        # Optimize query using `select_related` to fetch author & category in one query
+    
+        blogs = Blog.objects.filter(status='accepted', category__is_active=True)
+        if category:
+            blogs = blogs.filter(category__name__iexact=category)
+        blogs = blogs.order_by('-created_at')[:6]
+
+        serializer = BlogPostSerializer(blogs, many=True)  
+        return Response(serializer.data, status=status.HTTP_200_OK)

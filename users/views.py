@@ -22,37 +22,80 @@ import random
 
 
 
+import random
+from django.shortcuts import render, redirect
+from django.core.mail import EmailMultiAlternatives
+from django.utils.timezone import now
+from django.core.cache import cache
+from django.contrib.auth import get_user_model
+from datetime import timedelta
+
 User = get_user_model()
 
-# Store OTPs temporarily
-otp_storage = {}
+# OTP expiration time (5 minutes)
+OTP_EXPIRY_SECONDS = 300  # 5 minutes
+OTP_COOLDOWN_SECONDS = 60  # Cooldown time (1 minute)
 
 def request_otp(request):
     if request.method == "POST":
-        email = request.POST.get("email")
-        is_admin_email = User.objects.filter(email=email, is_superuser=True).exists()
-        # Check if the user is invited
-        if not (is_admin_email or Invitation.objects.filter(email=email).exists()):
+        email = request.POST.get("email").strip()
+
+        # Check if user exists
+        user = User.objects.filter(email=email).first()
+        user_name = user.first_name if user and user.first_name else "New User"
+
+        # Check if email belongs to an admin or invited user
+        is_admin_email = user.is_superuser if user else False
+        is_invited = Invitation.objects.filter(email=email).exists()
+        
+        if not (is_admin_email or is_invited):
             return render(request, "users/request_otp.html", {"error": "You are not an invited user!"})
 
-        otp = str(random.randint(100000, 999999))  # Generate a 6-digit OTP
+        # Check if an OTP was sent recently (cooldown period)
+        if cache.get(f"otp_cooldown_{email}"):
+            return render(request, "users/request_otp.html", {"error": "Please wait before requesting a new OTP."})
 
-        # Store OTP with timestamp
-        otp_storage[email] = {"otp": otp, "timestamp": now()}
+        # Generate a 6-digit OTP
+        otp = str(random.randint(100000, 999999))
 
-        # Send OTP via email
-        send_mail(
-            "Your OTP Code",
-            f"Your OTP is: {otp}",
-            "noreply@yourdomain.com",
-            [email],
-            fail_silently=False,
-        )
+        # Store OTP in cache (expires in 5 minutes)
+        cache.set(f"otp_{email}", {"otp": otp, "timestamp": now()}, OTP_EXPIRY_SECONDS)
 
-        request.session["email"] = email  # Store email in session for verification
-        return redirect("verify_otp")  # Redirect to OTP verification page
+        # Set cooldown period
+        cache.set(f"otp_cooldown_{email}", True, OTP_COOLDOWN_SECONDS)
+
+        # Send OTP email with user name
+        send_otp_email(email, user_name, otp)
+
+        # Store email in session for verification
+        request.session["email"] = email  
+        
+        return redirect("verify_otp")
 
     return render(request, "users/request_otp.html")
+
+
+
+
+def send_otp_email(email, user_name, otp_code):
+    subject = "Your OTP Code"
+    
+    # Load HTML template with user_name
+    from django.template.loader import render_to_string
+    html_content = render_to_string("emails/otp_email.html", {"user_name": user_name, "otp_code": otp_code})
+    
+    # Convert to plain text (fallback)
+    from django.utils.html import strip_tags
+    text_content = strip_tags(html_content)
+
+    from_email = "noreply@yourdomain.com"
+    to_email = [email]
+
+    email_message = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+    email_message.attach_alternative(html_content, "text/html")
+    email_message.send()
+
+
 
 
 def verify_otp(request):
@@ -62,16 +105,19 @@ def verify_otp(request):
 
     if request.method == "POST":
         entered_otp = request.POST.get("otp")
-        stored_otp = otp_storage.get(email)
 
-        if stored_otp and stored_otp["otp"] == entered_otp:
-            # Check if user exists
-            user, created = User.objects.get_or_create(email=email,defaults={'username': email})
+        # Retrieve stored OTP from cache (NOT from otp_storage)
+        stored_data = cache.get(f"otp_{email}")
+
+        if stored_data and stored_data["otp"] == entered_otp:
+            # Get or create user
+            user, created = User.objects.get_or_create(email=email, defaults={'username': email})
             
             # If the user is new, set a default password (change later)
             if created:
                 user.set_password(User.objects.make_random_password())
                 user.save()
+
             if not user.is_active:
                 messages.error(request, "Your account is disabled. Please contact support.")
                 return redirect("verify_otp")  # Redirect back to OTP page
@@ -79,14 +125,16 @@ def verify_otp(request):
             # Log the user in
             login(request, user)
 
-            # Clear OTP storage
-            del otp_storage[email]
-            
+            # Remove OTP from cache after successful login
+            cache.delete(f"otp_{email}")
+
+            # Redirect users based on role
             if user.is_superuser and user.is_staff:
-                return redirect("blog_detail_published")  # Redirect admin user
+                return redirect("admin_chart")  # Redirect admin user
             else:
                 return redirect("user_blog_update")  # Redirect regular user
 
+        # If OTP is incorrect
         return render(request, "users/verify_otp.html", {"error": "Invalid OTP"})
 
     return render(request, "users/verify_otp.html")
@@ -153,7 +201,7 @@ def create_post(request):
             author=author,
             status="Pending",
         )
-        return redirect('create_post')
+        return redirect('user_blog_update')
 
     categories = Category.objects.all()  # Get all categories from DB
     template = "admin/admin_create_post.html" if request.user.is_superuser else "users/create_post.html"
@@ -309,7 +357,7 @@ def dislike_blog(request, pk):
 
 
 def user_profile(request,pk):
-    user = get_object_or_404(User, id=pk)
+    user = get_object_or_404(User,id=pk)
     user_blogs = Blog.objects.filter(author=user).order_by('-created_at')
     
     context = {
@@ -317,3 +365,7 @@ def user_profile(request,pk):
         'user_blogs': user_blogs
     }
     return render(request, 'users/user_profile.html', context)
+
+
+
+
