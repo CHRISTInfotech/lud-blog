@@ -22,7 +22,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
-@receiver(post_migrate)
+
 def create_default_categories(sender, **kwargs):
     if sender.name == 'blog':  # Ensure it runs only for the 'blog' app
         default_categories = ["Other"]

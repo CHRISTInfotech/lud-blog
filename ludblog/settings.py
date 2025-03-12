@@ -140,13 +140,9 @@ ALLOW_MEDIA = True
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
-# MEDIA_URL = '/media/'
-
-# MEDIA_ROOT = (BASE_DIR /'media')
-# MEDIA_ROOT = r"C:\Users\jaise\lud-blog\media"
-
 
 STATIC_URL = '/static/'
+CKEDITOR_UPLOAD_PATH = os.path.join(BASE_DIR,'media')
 
 if DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
