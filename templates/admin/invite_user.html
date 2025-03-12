@@ -74,6 +74,9 @@
             font-size: 1.125rem;
         }
     }
+    .cke_notification { 
+        display: none !important; 
+    }
 </style>
 
 <div class="main p-4 rounded mx-auto form-container bg-white shadow-md">
@@ -198,5 +201,9 @@ setTimeout(function() {
     document.querySelectorAll('.alert-message').forEach(msg => msg.style.display = 'none');
 }, 5000);
 </script>
-
+<script>
+    CKEDITOR.on('error', function (event) {
+        event.cancel();  // Prevent error messages from being displayed
+    });
+</script>
 {% endblock content %}

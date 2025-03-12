@@ -16,6 +16,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             CKEDITOR.replace("richTextEditor"); // Apply to textareas with id="editor"
+            CKEDITOR.on('error', function (event) {
+                event.cancel();  // Prevent error messages from being displayed
         });
     </script>
     <style>

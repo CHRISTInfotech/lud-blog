@@ -24,17 +24,16 @@ import random
 
 import random
 from django.shortcuts import render, redirect
-from django.core.mail import EmailMultiAlternatives
-from django.utils.timezone import now
+from django.contrib.auth import get_user_model, login
+from django.utils.timezone import now, timedelta
 from django.core.cache import cache
-from django.contrib.auth import get_user_model
-from datetime import timedelta
+from django.contrib import messages
+from cadmin.models import OTP
+# from .views import send_otp_email  # Your email sending function
 
 User = get_user_model()
-
-# OTP expiration time (5 minutes)
 OTP_EXPIRY_SECONDS = 300  # 5 minutes
-OTP_COOLDOWN_SECONDS = 60  # Cooldown time (1 minute)
+OTP_COOLDOWN_SECONDS = 60  # 1-minute cooldown
 
 def request_otp(request):
     if request.method == "POST":
@@ -51,21 +50,22 @@ def request_otp(request):
         if not (is_admin_email or is_invited):
             return render(request, "users/request_otp.html", {"error": "You are not an invited user!"})
 
-        # Check if an OTP was sent recently (cooldown period)
+        # Check cooldown period
         if cache.get(f"otp_cooldown_{email}"):
             return render(request, "users/request_otp.html", {"error": "Please wait before requesting a new OTP."})
 
         # Generate a 6-digit OTP
-        otp = str(random.randint(100000, 999999))
+        otp_code = str(random.randint(100000, 999999))
 
-        # Store OTP in cache (expires in 5 minutes)
-        cache.set(f"otp_{email}", {"otp": otp, "timestamp": now()}, OTP_EXPIRY_SECONDS)
+        # Remove old OTP (if any) and store the new one
+        OTP.objects.filter(email=email).delete()  # Remove previous OTP
+        OTP.objects.create(email=email, otp=otp_code, created_at=now())  # Store new OTP
 
         # Set cooldown period
         cache.set(f"otp_cooldown_{email}", True, OTP_COOLDOWN_SECONDS)
 
-        # Send OTP email with user name
-        send_otp_email(email, user_name, otp)
+        # Send OTP email
+        send_otp_email(email, user_name, otp_code)
 
         # Store email in session for verification
         request.session["email"] = email  
@@ -75,6 +75,8 @@ def request_otp(request):
     return render(request, "users/request_otp.html")
 
 
+
+from django.core.mail import EmailMultiAlternatives
 
 
 def send_otp_email(email, user_name, otp_code):
@@ -106,27 +108,31 @@ def verify_otp(request):
     if request.method == "POST":
         entered_otp = request.POST.get("otp")
 
-        # Retrieve stored OTP from cache (NOT from otp_storage)
-        stored_data = cache.get(f"otp_{email}")
+        # Retrieve stored OTP from database
+        otp_entry = OTP.objects.filter(email=email).first()
 
-        if stored_data and stored_data["otp"] == entered_otp:
+        if otp_entry and otp_entry.otp == entered_otp:
+            if otp_entry.is_expired():
+                OTP.objects.filter(email=email).delete()  # Remove expired OTP
+                return render(request, "users/verify_otp.html", {"error": "OTP has expired. Request a new one."})
+
             # Get or create user
             user, created = User.objects.get_or_create(email=email, defaults={'username': email})
             
-            # If the user is new, set a default password (change later)
+            # If the user is new, set a default password
             if created:
                 user.set_password(User.objects.make_random_password())
                 user.save()
 
             if not user.is_active:
                 messages.error(request, "Your account is disabled. Please contact support.")
-                return redirect("verify_otp")  # Redirect back to OTP page
+                return redirect("verify_otp")
 
             # Log the user in
             login(request, user)
 
-            # Remove OTP from cache after successful login
-            cache.delete(f"otp_{email}")
+            # Remove OTP from database after successful login
+            OTP.objects.filter(email=email).delete()
 
             # Redirect users based on role
             if user.is_superuser and user.is_staff:
@@ -134,10 +140,10 @@ def verify_otp(request):
             else:
                 return redirect("user_blog_update")  # Redirect regular user
 
-        # If OTP is incorrect
         return render(request, "users/verify_otp.html", {"error": "Invalid OTP"})
 
     return render(request, "users/verify_otp.html")
+
 
 
 

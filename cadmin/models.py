@@ -28,3 +28,19 @@ class Invitation(models.Model):
     
     def __str__(self):
         return f"{self.email} - {'Accepted' if self.accepted else 'Pending'}"
+
+
+from django.db import models
+from django.utils.timezone import now, timedelta
+
+class OTP(models.Model):
+    email = models.EmailField(unique=True)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        """Check if the OTP has expired (5 minutes)."""
+        return now() > self.created_at + timedelta(seconds=300)  # 5-minute expiry
+
+    def __str__(self):
+        return f"OTP for {self.email} - {self.otp} (Expires: {self.created_at + timedelta(seconds=300)})"
