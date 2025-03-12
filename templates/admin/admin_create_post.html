@@ -14,6 +14,9 @@
             margin-left: 0px; /* No left margin on mobile */
         }
     }
+    .cke_notification { 
+        display: none !important; 
+    }
     </style>
 <!-- Blog Form -->
 <div class="main p-6 rounded shadow mx-auto max-w-full mt-2">
@@ -55,5 +58,10 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 </script> {% endcomment %}
+<script>
+    CKEDITOR.on('error', function (event) {
+        event.cancel();  // Prevent error messages from being displayed
+    });
+</script>
 
 {% endblock content%}

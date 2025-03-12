@@ -18,6 +18,9 @@
             {% if request.resolver_match.url_name == 'invite_user' %}
             CKEDITOR.instances.richTextEditor.setData("You are invited to join the lud blog platfrom to share your taughts on LUD and LUD wings");
             {% endif %}
+            event.editor.on('notificationShow', function (evt) {
+                evt.cancel();  // Prevent CKEditor from displaying error messages
+            });
         });
     </script>
     <style>
