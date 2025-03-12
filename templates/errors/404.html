@@ -1,0 +1,9 @@
+{% extends "partials/home_base.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/errors.css">
+<div class="error-container">
+    <h1>400</h1>
+    <p>Bad request! Your request cannot be processed.</p>
+    <a href="{% url 'blog-home' %}" class="btn-home">Go Back</a>
+</div>
+{% endblock %}

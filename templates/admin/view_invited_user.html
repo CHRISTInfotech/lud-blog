@@ -1,104 +1,119 @@
 {% extends 'partials/admin_base.html' %}
+
 {% block title %}Invited Users{% endblock %}
 
 {% block content %}
 <style>
-    /* Matching previous table styling */
-    #invitationsTable {
-        border-collapse: separate;
-        border-spacing: 0 0.5rem;
-        margin: 0.5rem 0;
+ 
+    @media (min-width: 768px) {
+        .content-container {
+            margin-left: 250px; /* Sidebar width */
+            padding: 1.25rem;
+        }
+    }
+    .content-container {
+        padding: 1.25rem;
+        transition: margin-left 0.3s ease;
+        margin-top: 60px; /* Increased spacing from navbar */
+    }
+    /* Table styling */
+    .table-responsive {
+        overflow-x: auto;
         width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        
+    }
+    .table-container {
+        margin-left:250; /* Adjusted for sidebar width */
+        margin-top: 30px; /* Adjusted for navbar height */
+        padding: 1rem;
+        width: calc(100% - 5px); /* Ensure table fits within remaining space */
+    }
+
+    th, td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+        background-color: #f9fafb;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #4b5563;
+    }
+
+    td {
+        color: #1f2937;
         font-size: 0.875rem;
     }
 
-    #invitationsTable thead th {
-        background-color: #f8fafc;
-        color: #64748b;
-        font-weight: 600;
-        padding: 0.75rem 1rem;
-        border-bottom: 2px solid #e2e8f0;
-        text-align: left;
+    tr:hover {
+        background-color: #f9fafb;
     }
 
-    #invitationsTable tbody td {
-        background-color: white;
-        padding: 0.75rem 1rem;
-        border-top: 1px solid #f1f5f9;
-        border-bottom: 1px solid #f1f5f9;
-        transition: all 0.2s ease;
-    }
-
-    #invitationsTable tbody tr:hover td {
-        background-color: #f8fafc;
-        transform: translateY(-2px);
-        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Status badges matching previous style */
+    /* Status badges */
     .status-badge {
-        padding: 0.15rem 0.6rem;
-        border-radius: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
         font-size: 0.75rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
+        font-weight: 500;
+        display: inline-block;
     }
-
-    .status-accepted { 
-        background: #ecfdf5;
-        color: #059669;
+    
+    .status-accepted {
+        background-color: #d1fae5;
+        color: #065f46;
     }
-
+    
     .status-pending {
-        background: #fffbeb;
-        color: #d97706;
+        background-color: #fef3c7;
+        color: #92400e;
     }
 </style>
 
-<div class="p-6 max-w-7xl mx-auto relative bg-white rounded-lg shadow-sm">
-    <!-- Header Section -->
-    <div class="header-container mb-4">
-        {% comment %} <h1 class="text-xl font-semibold text-gray-900">Invited Users</h1> {% endcomment %}
-        {% comment %} <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
-        onclick="window.open('invite_user', '_blank')">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-    </svg>
-    Invite New User
-</button> {% endcomment %}
-
+<div class="content-container">
+    <div class="content-card">
+        <div class="table-container">
+            <div class="table-responsive">
+                <table id="invitationsTable">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invite in invitations %}
+                        <tr>
+                            <td class="font-medium">{{ invite.email|truncatechars:30 }}</td>
+                            <td>{{ invite.name|default:"N/A"|truncatechars:20 }}</td>
+                            <td>{{ invite.message|default:"No message"|truncatechars:40 }}</td>
+                            <td>
+                                <span class="status-badge {% if invite.accepted %}status-accepted{% else %}status-pending{% endif %}">
+                                    {% if invite.accepted %}Accepted{% else %}Pending{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-gray-500 py-4">No invitations yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <!-- Table -->
-    <table id="invitationsTable" class="w-full">
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Message</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for invite in invitations %}
-            <tr>
-                <td class="font-medium text-gray-900">{{ invite.email|truncatechars:30 }}</td>
-                <td>{{ invite.name|default:"N/A"|truncatechars:20 }}</td>
-                <td>{{ invite.message|default:"No message"|truncatechars:40 }}</td>
-                <td>
-                    <span class="status-badge {% if invite.accepted %}status-accepted{% else %}status-pending{% endif %}">
-                        {% if invite.accepted %}Accepted{% else %}Pending{% endif %}
-                    </span>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="text-center text-gray-500 py-4">No invitations yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 
 <!-- DataTables JS -->
@@ -107,14 +122,15 @@
 
 <script>
 $(document).ready(function() {
+    {% if invitations and invitations|length > 0 %}
     const table = $('#invitationsTable').DataTable({
         processing: true,
         serverSide: false,
         pageLength: 7,
-        lengthMenu: [[7,6,5], [7,6,5]],
+        lengthMenu: [[7, 6, 5], [7, 6, 5]],
         paging: true,
         responsive: true,
-        dom: '<"flex justify-between items-center mb-3"lf>rt<"flex justify-between items-center mt-3"ip>',
+        dom: '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4"<"flex items-center"l><"flex"f>>rt<"flex flex-col md:flex-row justify-between items-center mt-4"<"mb-2 md:mb-0"i><"flex"p>>',
         language: {
             paginate: {
                 next: 'Next →',
@@ -122,8 +138,8 @@ $(document).ready(function() {
             },
             search: "_INPUT_",
             searchPlaceholder: "Search invitations...",
-            info: "Showing _START_ to _END_ of _TOTAL_",
-            lengthMenu: "Show _MENU_",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            lengthMenu: "Show _MENU_ entries",
             infoEmpty: "No entries found",
             zeroRecords: "No matching invitations found",
         },
@@ -133,10 +149,23 @@ $(document).ready(function() {
             { targets: 2, width: '35%' },
             { targets: 3, width: '15%', orderable: false }
         ],
-        autoWidth: false,
-        order: [[0, 'asc']]
+        drawCallback: function() {
+            // Re-apply any custom styling after table redraws
+            $('.dataTables_paginate > .paginate_button').addClass('cursor-pointer');
+        },
+        initComplete: function() {
+            $('.loading-overlay').hide();
+        }
     });
+
+    // Loading overlay
+    table.on('processing.dt', function(e, settings, processing) {
+        $('.loading-overlay').toggle(processing);
+    });
+    {% else %}
+    // Hide loading spinner if no data
+    $('.loading-overlay').hide();
+    {% endif %}
 });
 </script>
-
 {% endblock %}

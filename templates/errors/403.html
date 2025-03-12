@@ -1,0 +1,10 @@
+{% extends "partials/home_base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/errors.css">
+<div class="error-container">
+    <h1>403</h1>
+    <p>Access Denied! You don’t have permission to view this page.</p>
+    <a href="{% url 'blog-home' %}" class="btn-home">Back to Home</a>
+</div>
+{% endblock %}

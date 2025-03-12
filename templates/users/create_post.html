@@ -4,8 +4,19 @@
 {% block title %}View All Blogs{% endblock %}
 
 {% block content %}
+<style>
+.main{
+    margin-left:250px;
+    margin-top:70px;
+}
+@media screen and (max-width: 1024px) {
+    .main {
+        margin-left: 0px; /* No left margin on mobile */
+    }
+}
+</style>
 <!-- Blog Form -->
-<div class="main p-6 rounded shadow mx-auto max-w-full mt-2">
+<div class="main p-6 rounded shadow  mx-auto max-w-full mt-2">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
