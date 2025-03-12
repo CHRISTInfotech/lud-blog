@@ -91,7 +91,7 @@
         {% csrf_token %}
 
         <!-- Success/Error Messages -->
-        {% if messages %}
+       
         <div class="mb-4">
             {% for message in messages %}
             <div class="alert-message p-3 rounded-lg shadow-md text-white font-semibold text-center 
@@ -100,7 +100,7 @@
             </div>
             {% endfor %}
         </div>
-        {% endif %}
+      
 
         <!-- Single Invite Section -->
         <div id="single-invite-section">
@@ -138,7 +138,7 @@
         <!-- Rich Text Editor -->
         <div class="mb-4">
             <label for="richTextEditor" class="block text-lg font-semibold mb-2">Content</label>
-            <textarea id="richTextEditor" name="content" value="you are invited to the letus dream blogs"></textarea>
+            <textarea id="richTextEditor" name="content"></textarea>
         </div>
 
         <!-- Submit Button -->
