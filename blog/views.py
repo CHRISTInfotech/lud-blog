@@ -59,3 +59,10 @@ class RecentBlogsAPI(APIView):
 
         serializer = BlogPostSerializer(blogs, many=True)  
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+def user_workflow(request):
+    return render(request,'blog/user_workflow.html')
+
+def admin_workflow(request):
+    return render(request,'blog/admin_workflow.html')

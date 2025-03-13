@@ -16,10 +16,13 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             CKEDITOR.replace("richTextEditor"); // Apply to textareas with id="editor"
-            CKEDITOR.on('error', function (event) {
-                event.cancel();  // Prevent error messages from being displayed
+          
+            event.editor.on('notificationShow', function (evt) {
+                evt.cancel();  // Prevent CKEditor from displaying error messages
+            });
         });
     </script>
+
     <style>
         body {
             font-family: Arial, sans-serif;

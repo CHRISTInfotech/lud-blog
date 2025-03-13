@@ -213,6 +213,8 @@ def download_csv_template(request):
     
     return response
 
+
+from django.conf import settings
 @login_required
 def admin_edit_blog(request, blog_id):
     if not request.user.is_staff:
@@ -231,6 +233,11 @@ def admin_edit_blog(request, blog_id):
         # Check if admin wants to approve while updating
         if 'approve' in request.POST:
             blog.status = 'accepted'
+            # Send email notification to the user using template
+            subject = "Your Blog Has Been Approved"
+            email_context = {'author': blog.author, 'title': blog.title}
+            message = render_to_string('emails/user_blog_approved.html', email_context)
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [blog.author.email], html_message=message)
         elif 'reject' in request.POST:
             blog.status = 'rejected'
         elif 'pending' in request.POST:
@@ -306,7 +313,12 @@ def admin_chart(request):
 
     # Count total blogs
     total_blogs = Blog.objects.count()
+    # Count total blogs
+    active_users = User.objects.filter(is_active=True).count()
 
+    # Count pending and accepted blogs
+    pending_blogs = Blog.objects.filter(status="Pending").count()
+    accepted_blogs = Blog.objects.filter(status="accepted").count()
     # Total likes vs dislikes
     total_likes = Blog.objects.aggregate(total_likes=Count("likes"))["total_likes"]
     total_dislikes = Blog.objects.aggregate(total_dislikes=Count("dislikes"))["total_dislikes"]
@@ -319,5 +331,10 @@ def admin_chart(request):
         "total_blogs": total_blogs,
         "total_likes": total_likes,
         "total_dislikes": total_dislikes,
+        "pending_blogs":pending_blogs,
+        "accepted_blogs":accepted_blogs,
+        " active_users": active_users,
+
+
     }
     return render(request,'admin/admin_chart.html',context)
