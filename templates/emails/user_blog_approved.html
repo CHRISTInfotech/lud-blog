@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Approved</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f8fa;
+        }
+        .email-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header img {
+            max-width: 150px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            color: #2e7d32;
+            margin-top: 0;
+            text-align: center;
+            font-size: 24px;
+        }
+        .success-icon {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #2e7d32;
+        }
+        .blog-title {
+            background-color: #f1f8e9;
+            border-left: 4px solid #2e7d32;
+            padding: 12px 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        .message {
+            margin-bottom: 20px;
+        }
+        .view-button {
+            display: block;
+            background-color: #2e7d32;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            margin: 25px auto;
+            width: 200px;
+        }
+        .signature {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .team-name {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #757575;
+        }
+        .social-links {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #757575;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        {% comment %} <div class="header">
+            <img src="{% static 'image/let_us_dream_logo.png' %}" alt="Let Us Dream Logo">
+        </div> {% endcomment %}
+        
+        <div class="success-icon">✓</div>
+        
+        <h2>Congratulations, Your Blog Has Been Approved!</h2>
+        
+        <div class="message">
+            <p>Dear {{ author.get_full_name }},</p>
+            
+            <p>We're pleased to inform you that your blog post has been approved and is now live on our platform.</p>
+            
+            <div class="blog-title">
+                <strong>{{ title }}</strong>
+            </div>
+            
+            <p>Your insights and perspectives are valuable to our community. We appreciate your contribution and look forward to more amazing content from you in the future.</p>
+            
+            <a href="blogs.letusdream.org" class="view-button">View Your Post</a>
+            
+            <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team.</p>
+        </div>
+        
+        <div class="signature">
+            <p>Best Regards,<br><span class="team-name">Let Us Dream Team</span></p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Let Us Dream. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

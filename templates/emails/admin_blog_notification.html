@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Blog Submission</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .email-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 25px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .content-row {
+            margin-bottom: 15px;
+        }
+        .label {
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-right: 8px;
+        }
+        .value {
+            color: #333;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h2>New Blog Submission</h2>
+        </div>
+        
+        <div class="content">
+            <div class="content-row">
+                <span class="label">User:</span>
+                <span class="value">{{ user_name }} ({{ user_email }})</span>
+            </div>
+            
+            <div class="content-row">
+                <span class="label">Title:</span>
+                <span class="value">{{ title }}</span>
+            </div>
+            
+            <div class="content-row">
+                <span class="label">Category:</span>
+                <span class="value">{{ category }}</span>
+            </div>
+            
+            <div class="content-row">
+                <span class="label">Status:</span>
+                <span class="status">{{ status }}</span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="blogs.letusdream.org" class="action-button">Review Post</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated notification. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>

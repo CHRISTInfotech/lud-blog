@@ -186,7 +186,10 @@ def edit_profile(request):
     return render(request, 'users/edit_profile.html', {'user_profile': user_profile})
     
 
-
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
 @active_user_required
 @login_required
 def create_post(request):
@@ -207,6 +210,28 @@ def create_post(request):
             author=author,
             status="Pending",
         )
+       # Get all admin emails
+        admin_emails = list(User.objects.filter(is_superuser=True).values_list('email', flat=True))
+
+        if admin_emails:  # Ensure there are admins to notify
+            subject = "New Blog Submission Pending Approval"
+            
+            # Render email template
+            context = {
+                'user_name': author.get_full_name(),
+                'user_email': author.email,
+                'title': title,
+                'category': category.name,
+                'status': "Pending",
+            }
+            html_content = render_to_string('emails/admin_blog_notification.html', context)
+            text_content = strip_tags(html_content)  # Fallback for email clients without HTML support
+            
+            # Send email
+            email = EmailMultiAlternatives(subject, text_content, settings.DEFAULT_FROM_EMAIL, admin_emails)
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
         return redirect('user_blog_update')
 
     categories = Category.objects.all()  # Get all categories from DB
