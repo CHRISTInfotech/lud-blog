@@ -1,0 +1,266 @@
+{% extends 'partials/home_base.html' %}
+
+{% block content %}
+<div class="admin-capabilities-container">
+    <h1 class="section-title">Admin Dashboard Features</h1>
+    
+    <div class="capabilities-grid">
+        <!-- Blog Management -->
+        <div class="capability-card">
+            <div class="capability-icon">📋</div>
+            <h3>Blog Review</h3>
+            <ul class="feature-list">
+                <li>Review submitted blog entries</li>
+                <li>Approve blogs for publication</li>
+                <li>Reject with feedback for revision</li>
+                <li class="highlight">Automated email notifications</li>
+            </ul>
+        </div>
+
+        <!-- Category Management -->
+        <div class="capability-card">
+            <div class="capability-icon">🏷️</div>
+            <h3>Category Management</h3>
+            <ul class="feature-list">
+                <li>Create new blog categories</li>
+                <li>Edit existing category details</li>
+                <li>Enable/disable specific categories</li>
+                <li>Manage category hierarchy</li>
+            </ul>
+        </div>
+
+        <!-- User Management -->
+        <div class="capability-card">
+            <div class="capability-icon">👥</div>
+            <h3>User Management</h3>
+            <ul class="feature-list">
+                <li>View all registered users</li>
+                <li>Enable/disable user accounts</li>
+                <li>Manage access permissions</li>
+                <li>Track user activity logs</li>
+            </ul>
+        </div>
+
+        <!-- User Invitations -->
+        <div class="capability-card">
+            <div class="capability-icon">✉️</div>
+            <h3>User Invitations</h3>
+            <ul class="feature-list">
+                <li>Send individual invitations</li>
+                <li>Bulk import via CSV upload</li>
+                <li class="highlight">Track invitation status</li>
+                <li>Resend pending invitations</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Flowchart Section -->
+    <div class="workflow-section">
+        <h2 class="subsection-title">Admin Blog Review Process</h2>
+        <div class="flowchart-container">
+            <div class="mermaid">
+                flowchart LR
+                    A[New Submission] -->|Review| B[Admin Decision]
+                    B -->|Approve| C[Publish Blog]
+                    B -->|Reject| D[Send Feedback]
+                    C -->|Notify| E[Author Notified]
+                    D -->|Notify| F[Author Revises]
+                    F -->|Resubmit| A
+                    
+                    style A fill:#74b9ff,stroke:#0984e3,color:#222
+                    style B fill:#a29bfe,stroke:#6c5ce7,color:#fff
+                    style C fill:#55efc4,stroke:#00b894,color:#222
+                    style D fill:#fab1a0,stroke:#e17055,color:#222
+                    style E fill:#81ecec,stroke:#00cec9,color:#222
+                    style F fill:#ffeaa7,stroke:#fdcb6e,color:#222
+            </div>
+        </div>
+    </div>
+
+   
+
+    <div class="workflow-note">
+        <p>📌 Note: All admin actions are logged for audit purposes. User management and blog approvals 
+           require admin level permissions. Category management is available to both admins and moderators.</p>
+    </div>
+</div>
+
+<style>
+    .admin-capabilities-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .section-title {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2.5rem;
+        font-size: 2.2rem;
+    }
+
+    .capabilities-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .capability-card {
+        background: #ffffff;
+        padding: 1.8rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .capability-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+    }
+
+    .capability-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 1.5rem;
+    }
+
+    .feature-list li {
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .feature-list li:before {
+        content: "✓";
+        color: #27ae60;
+        font-weight: bold;
+    }
+
+    .highlight {
+        color: #e67e22;
+        font-weight: 500;
+    }
+
+    /* Flowchart styles */
+    .workflow-section {
+        margin: 3rem 0;
+    }
+
+    .subsection-title {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .flowchart-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        overflow-x: auto;
+    }
+
+    /* Admin dashboard stats */
+    .admin-dashboard-preview {
+        margin: 3rem 0;
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:nth-child(2) {
+        background: linear-gradient(135deg, #0984e3, #74b9ff);
+    }
+
+    .stat-card:nth-child(3) {
+        background: linear-gradient(135deg, #00b894, #55efc4);
+    }
+
+    .stat-card:nth-child(4) {
+        background: linear-gradient(135deg, #fdcb6e, #ffeaa7);
+        color: #2d3436;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .workflow-note {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        border-left: 4px solid #3498db;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .capabilities-grid, .stats-container {
+            grid-template-columns: repeat(2, 1fr); /* 2 cards per row on medium screens */
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .capabilities-grid, .stats-container {
+            grid-template-columns: 1fr; /* 1 card per row on small screens */
+        }
+        
+        .capability-card, .stat-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<!-- Include Mermaid.js for flowchart rendering -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        flowchart: {
+            curve: 'basis',
+            useMaxWidth: true
+        }
+    });
+</script>
+{% endblock %}

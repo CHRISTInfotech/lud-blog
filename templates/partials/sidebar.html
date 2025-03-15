@@ -40,7 +40,10 @@
         <span class="sidebar-icon text-white">✏️</span>
         <span class="sidebar-text ml-2 text-dark">Edit Profile</span>
     </a>
-    
+    <a href="{% url 'user_workflow' %}" class="block py-2 px-4 flex items-center hover:bg-green-600 hover:text-white rounded">
+        <span class="sidebar-icon text-white">❓</span>
+        <span class="sidebar-text ml-2 text-dark">User Guide</span>
+    </a>
     <a href="{% url 'logout' %}" class="block py-2 px-4 flex items-center hover:bg-red-700 hover:text-white rounded">
         <span class="sidebar-icon text-white">🚪</span>
         <span class="sidebar-text ml-2 text-dark">Log Out</span>
