@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-lyexy76u1m-s_*l-+l9wt#v-0ljr5!q-y$evys877d6ti3&u16'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1','localhost','yourdomain.com']
 else:
-    ALLOWED_HOSTS = ['10.5.5.31','blogs.letusdream.org']
+    ALLOWED_HOSTS = ['10.5.5.31','blogs.letusdream.org','*']
 
 # Application definition
 
