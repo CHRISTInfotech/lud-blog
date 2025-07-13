@@ -64,7 +64,7 @@
                 <div class="col">
                     <a href="{% url 'blog_detail' post.id %}" class="blog-link">
                         <div class="card border-0 shadow-sm rounded-lg blog-card">
-                            <img src="{{ post.image.url }}" class="card-img-top blog-image" alt="Blog Image">
+                            {% if post.image %}<img src="{{ post.image.url }}" class="card-img-top blog-image" alt="Blog Image">{% endif %}
                             <div class="card-body">
                                 <span class="badge bg-primary">{{ post.category.name }}</span>
                                 <h5 class="fw-bold mt-2">{{ post.title|title|truncatechars:50 }}</h5>
